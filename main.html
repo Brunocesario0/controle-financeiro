@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Controle Financeiro</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
+  <script src="firebase.js"></script>
+</head>
+<body>
+  <header>
+    <h2>💵 Controle Financeiro Familiar</h2>
+    <div id="user-info"></div>
+    <button onclick="logout()">Sair</button>
+  </header>
+
+  <main id="app-container" class="hidden">
+    <section class="form-section">
+      <h3>Lançar movimentação</h3>
+      <input type="text" id="pessoa" placeholder="Pessoa">
+      <input type="text" id="descricao" placeholder="Descrição">
+      <input type="number" id="valor" placeholder="Valor">
+      <input type="date" id="data" placeholder="Data">
+      <select id="tipo">
+        <option value="Receita">Receita</option>
+        <option value="Despesa">Despesa</option>
+        <option value="Investimento">Investimento</option>
+        <option value="Saque de Investimento">Saque de Investimento</option>
+      </select>
+      <button onclick="adicionarRegistro()">Adicionar</button>
+    </section>
+
+    <section class="tabelas">
+      <h3>Despesas</h3>
+      <table id="tabelaDespesas">
+        <thead>
+          <tr>
+            <th onclick="ordenarTabela('tabelaDespesas',0)">Pessoa</th>
+            <th onclick="ordenarTabela('tabelaDespesas',1)">Descrição</th>
+            <th onclick="ordenarTabela('tabelaDespesas',2)">Valor</th>
+            <th onclick="ordenarTabela('tabelaDespesas',3)">Data</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <h3>Investimentos</h3>
+      <table id="tabelaInvestimentos">
+        <thead>
+          <tr>
+            <th onclick="ordenarTabela('tabelaInvestimentos',0)">Pessoa</th>
+            <th onclick="ordenarTabela('tabelaInvestimentos',1)">Descrição</th>
+            <th onclick="ordenarTabela('tabelaInvestimentos',2)">Valor</th>
+            <th onclick="ordenarTabela('tabelaInvestimentos',3)">Data</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section class="resumo">
+      <h3>Resumo Financeiro</h3>
+      <p id="resumoPessoas"></p>
+      <p id="resumoCasal"></p>
+      <h4>Resumo de Investimentos</h4>
+      <p id="resumoInvestimentos"></p>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
