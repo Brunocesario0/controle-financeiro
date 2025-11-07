@@ -24,7 +24,23 @@ header nav a, header nav button {
 }
 
 .container {
+  max-width: 1000px;
+  margin: 20px auto;
   padding: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.card {
+  background: #fff;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .btn {
@@ -32,6 +48,7 @@ header nav a, header nav button {
   border-radius: 6px;
   cursor: pointer;
   border: none;
+  font-weight: 600;
 }
 
 .btn.primary {
@@ -80,3 +97,17 @@ header nav a, header nav button {
   color: red;
   margin-top: 10px;
 }
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+th {
+  background: #f0f0f0;
+}
+
+.btn.primary { background: #007bff; color: #fff; }
+.btn.danger { background: #dc3545; color: #fff; }
+.btn.secondary { background: #6c757d; color: #fff; }

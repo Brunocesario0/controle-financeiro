@@ -2,7 +2,7 @@
 
 /* ---------- CONFIGURAÇÕES ---------- */
 const MASTER = { email: "bruno.cesario@outlook.com", senha: "zxasQW!@", tipo: "master" };
-const USERS_KEY = "cf_usuarios_v2";
+const USERS_KEY = "cf_usuarios";
 const SESSION_KEY = "cf_sessao_v1";
 const DATA_KEY = "cf_dados_v1";
 
