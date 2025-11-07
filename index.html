@@ -1,30 +1,63 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel - Controle Financeiro</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finance App</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>
-    <h1>💰 Painel Principal</h1>
-    <nav>
-      <ul id="menu">
-        <li><a href="insercao.html">Inserção</a></li>
-        <li><a href="graficos.html">Gráficos</a></li>
-        <li><a href="backup.html">Backup</a></li>
-        <li id="menuUsuarios"><a href="usuarios.html">Usuários</a></li>
-        <li><button id="logout" class="btn danger">Sair</button></li>
-      </ul>
-    </nav>
-  </header>
-  <main class="container">
-    <section class="card">
-      <h2>Bem-vindo ao sistema!</h2>
-      <p>Use o menu acima para acessar as funções.</p>
-    </section>
-  </main>
+  <div id="app">
+    <!-- Tela de Login -->
+    <div id="login-screen" class="screen">
+      <h2>Login</h2>
+      <input type="text" id="login-username" placeholder="Usuário" />
+      <input type="password" id="login-password" placeholder="Senha" />
+      <button onclick="login()">Entrar</button>
+      <button onclick="showRegister()">Registrar</button>
+    </div>
+
+    <!-- Tela de Registro -->
+    <div id="register-screen" class="screen hidden">
+      <h2>Registrar</h2>
+      <input type="text" id="register-username" placeholder="Novo usuário" />
+      <input type="password" id="register-password" placeholder="Senha" />
+      <label><input type="checkbox" id="register-master" /> Usuário master</label>
+      <button onclick="register()">Salvar</button>
+      <button onclick="showLogin()">Voltar</button>
+    </div>
+
+    <!-- Tela de Inserção de Dados -->
+    <div id="data-screen" class="screen hidden">
+      <h2>Inserir Dados Financeiros</h2>
+      <select id="type">
+        <option value="receita">Receita</option>
+        <option value="despesa">Despesa</option>
+      </select>
+      <input type="number" id="value" placeholder="Valor" />
+      <input type="text" id="category" placeholder="Categoria" />
+      <input type="date" id="date" />
+      <button onclick="addTransaction()">Adicionar</button>
+      <button onclick="showChart()">Ver Gráficos</button>
+      <button onclick="showUserManagement()">Gerenciar Usuários</button>
+    </div>
+
+    <!-- Tela de Gráficos -->
+    <div id="chart-screen" class="screen hidden">
+      <h2>Gráficos</h2>
+      <canvas id="financeChart"></canvas>
+      <button onclick="showDataScreen()">Voltar</button>
+    </div>
+
+    <!-- Tela de Gerenciamento de Usuários -->
+    <div id="user-screen" class="screen hidden">
+      <h2>Usuários</h2>
+      <ul id="user-list"></ul>
+      <button onclick="showDataScreen()">Voltar</button>
+    </div>
+  </div>
+
+  <script src="chart.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
