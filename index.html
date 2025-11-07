@@ -2,32 +2,24 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Controle Financeiro em Casal — v2.3</title>
-  <link rel="stylesheet" href="style.css" />
-  <script>
-    const user = JSON.parse(localStorage.getItem("loggedUser"));
-    if (!user) window.location.href = "login.html";
-  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Controle Financeiro</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <header>
-    <h1>💰 Controle Financeiro em Casal</h1>
-    <p>Receitas, Despesas, Investimentos e Saques — agora com login e controle de usuários.</p>
-    <div style="display:flex; gap:8px; justify-content:center;">
-      <button id="logout" class="btn danger small">Sair</button>
-      <button id="gerenciar-usuarios" class="btn small">Gerenciar Usuários</button>
-    </div>
-  </header>
+<body class="login-body">
+  <div class="login-container">
+    <h1>💰 Controle Financeiro</h1>
+    <form id="login-form">
+      <label for="email">E-mail:</label>
+      <input type="email" id="email" placeholder="Digite seu e-mail" required>
 
-  <main class="container">
-    <!-- MANTÉM O SEU CÓDIGO ORIGINAL AQUI -->
-    <!-- SEÇÕES DE FORMULÁRIO, LANÇAMENTOS, INVESTIMENTOS E RESUMO -->
-  </main>
+      <label for="senha">Senha:</label>
+      <input type="password" id="senha" placeholder="Digite sua senha" required>
 
-  <footer>
-    <p>Aplicativo simples — v2.3</p>
-  </footer>
+      <button type="submit" class="btn primary">Entrar</button>
+      <p id="login-msg" class="msg"></p>
+    </form>
+  </div>
 
   <script src="script.js"></script>
 </body>
