@@ -1,68 +1,128 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Controle Financeiro em Casal</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Controle Financeiro em Casal — v2.1</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
     <h1>💰 Controle Financeiro em Casal</h1>
-    <p>Gerencie gastos, contas e investimentos de forma simples.</p>
+    <p>Registre Receitas, Despesas e Investimentos (investimentos ficam em lista separada).</p>
   </header>
 
-  <main>
-    <section id="form-section">
+  <main class="container">
+    <section class="card" id="form-section">
       <h2>Adicionar Lançamento</h2>
       <form id="finance-form">
-        <select id="pessoa" required>
-          <option value="">Quem?</option>
-          <option value="Bruno">Bruno</option>
-          <option value="Giovana">Giovana</option>
-        </select>
-        <input type="text" id="descricao" placeholder="Descrição" required>
-        <input type="number" id="valor" placeholder="Valor (R$)" required step="0.01">
-        <select id="tipo" required>
-          <option value="">Tipo</option>
-          <option value="Despesa">Despesa</option>
-          <option value="Investimento">Investimento</option>
-          <option value="Receita">Receita</option>
-        </select>
-        <button type="submit">Adicionar</button>
+        <div class="row">
+          <label>Quem
+            <select id="pessoa" required>
+              <option value="">--Escolha--</option>
+              <option value="Bruno">Bruno</option>
+              <option value="Giovana">Giovana</option>
+            </select>
+          </label>
+
+          <label>Tipo
+            <select id="tipo" required>
+              <option value="">--Tipo--</option>
+              <option value="Receita">Receita</option>
+              <option value="Despesa">Despesa</option>
+              <option value="Investimento">Investimento</option>
+            </select>
+          </label>
+        </div>
+
+        <label>Descrição
+          <input type="text" id="descricao" placeholder="Ex: Conta de luz / Aporte Tesouro" required />
+        </label>
+
+        <div class="row">
+          <label>Valor (R$)
+            <input type="number" id="valor" step="0.01" placeholder="0.00" required />
+          </label>
+          <label>Data
+            <input type="date" id="data" />
+          </label>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn primary">Adicionar</button>
+          <button type="button" id="limpar" class="btn danger">Limpar tudo</button>
+        </div>
       </form>
     </section>
 
-    <section id="tabela-section">
-      <h2>💼 Lançamentos</h2>
-      <table id="tabela">
+    <section class="card" id="lancamentos-section">
+      <h2>📋 Lançamentos (Receitas e Despesas)</h2>
+      <div class="table-actions">
+        <label>Filtro Pessoa:
+          <select id="filtroPessoa">
+            <option value="all">Todos</option>
+            <option value="Bruno">Bruno</option>
+            <option value="Giovana">Giovana</option>
+          </select>
+        </label>
+        <label>Filtro Tipo:
+          <select id="filtroTipo">
+            <option value="all">Todos</option>
+            <option value="Receita">Receita</option>
+            <option value="Despesa">Despesa</option>
+          </select>
+        </label>
+        <button id="export-lancamentos" class="btn">Exportar Lançamentos (CSV)</button>
+      </div>
+
+      <table id="tabela-lancamentos">
         <thead>
           <tr>
-            <th>Pessoa</th>
-            <th>Descrição</th>
-            <th>Valor (R$)</th>
-            <th>Tipo</th>
-            <th>Data</th>
-            <th>Ações</th>
+            <th>Quem</th><th>Descrição</th><th>Valor</th><th>Tipo</th><th>Data</th><th>Ações</th>
           </tr>
         </thead>
         <tbody></tbody>
       </table>
-      <button id="exportar">📊 Exportar para Excel</button>
     </section>
 
-    <section id="resumo-section">
+    <section class="card" id="investimentos-section">
+      <h2>📈 Investimentos</h2>
+      <div class="table-actions">
+        <button id="export-investimentos" class="btn">Exportar Investimentos (CSV)</button>
+      </div>
+      <table id="tabela-investimentos">
+        <thead>
+          <tr><th>Quem</th><th>Descrição</th><th>Valor</th><th>Data</th><th>Ações</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section class="card" id="resumo-section">
       <h2>Resumo</h2>
-      <div id="resumo">
-        <p>Bruno: <span id="saldo-bruno">R$ 0,00</span></p>
-        <p>Giovana: <span id="saldo-giovana">R$ 0,00</span></p>
-        <p><strong>Casal:</strong> <span id="saldo-total">R$ 0,00</span></p>
+      <div class="resumos">
+        <div class="mini">
+          <h3>Bruno</h3>
+          <div id="saldo-bruno">R$ 0,00</div>
+        </div>
+        <div class="mini">
+          <h3>Giovana</h3>
+          <div id="saldo-giovana">R$ 0,00</div>
+        </div>
+        <div class="mini">
+          <h3>Casal</h3>
+          <div id="saldo-total">R$ 0,00</div>
+        </div>
+      </div>
+
+      <div class="exports">
+        <button id="export-tudo" class="btn">Exportar Tudo (CSV)</button>
       </div>
     </section>
   </main>
 
   <footer>
-    <p>Desenvolvido por Bruno Cesário 💻</p>
+    <p>Aplicativo simples — v2.1</p>
   </footer>
 
   <script src="script.js"></script>
