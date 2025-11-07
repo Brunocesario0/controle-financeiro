@@ -7,140 +7,119 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-  <!-- === TELA DE LOGIN === -->
-  <div id="login-screen" class="login-container">
+  <header>
     <h1>💰 Controle Financeiro em Casal</h1>
-    <div class="login-card">
-      <h2>Acesso ao Sistema</h2>
-      <input type="email" id="loginEmail" placeholder="E-mail" required />
-      <input type="password" id="loginSenha" placeholder="Senha" required />
-      <button id="btnLogin" class="btn primary">Entrar</button>
-      <p id="loginMsg" class="msg"></p>
+    <p>Receitas, Despesas, Investimentos e Saques — com controle de usuários.</p>
+
+    <div class="user-bar">
+      <span id="userInfo"></span>
+      <button id="btnLogout" class="btn danger small">Sair</button>
     </div>
-  </div>
+  </header>
 
-  <!-- === CONTEÚDO PRINCIPAL === -->
-  <div id="app" class="hidden">
-
-    <header>
-      <h1>💰 Controle Financeiro em Casal</h1>
-      <p>Receitas, Despesas, Investimentos e Saques — com cores, datas e controle de usuários.</p>
-
-      <div class="user-bar">
-        <span id="userInfo"></span>
-        <button id="btnLogout" class="btn danger small">Sair</button>
-      </div>
-    </header>
-
-    <main class="container">
-      <!-- === FORMULÁRIO DE LANÇAMENTO === -->
-      <section class="card" id="form-section">
-        <h2>Adicionar Lançamento</h2>
-        <form id="finance-form">
-          <div class="row">
-            <label>Quem
-              <select id="pessoa" required>
-                <option value="">--Escolha--</option>
-                <option value="Bruno">Bruno</option>
-                <option value="Giovana">Giovana</option>
-              </select>
-            </label>
-
-            <label>Tipo
-              <select id="tipo" required>
-                <option value="">--Tipo--</option>
-                <option value="Receita">Receita</option>
-                <option value="Despesa">Despesa</option>
-                <option value="Investimento">Investimento</option>
-                <option value="Saque">Saque (Retirada de Investimento)</option>
-              </select>
-            </label>
-          </div>
-
-          <label>Descrição
-            <input type="text" id="descricao" placeholder="Ex: Salário / Conta de luz / Aporte Tesouro" required />
+  <main class="container">
+    <!-- === FORMULÁRIO DE LANÇAMENTO === -->
+    <section class="card" id="form-section">
+      <h2>Adicionar Lançamento</h2>
+      <form id="finance-form">
+        <div class="row">
+          <label>Quem
+            <select id="pessoa" required>
+              <option value="">--Escolha--</option>
+              <option value="Bruno">Bruno</option>
+              <option value="Giovana">Giovana</option>
+            </select>
           </label>
 
-          <div class="row">
-            <label>Valor (R$)
-              <input type="number" id="valor" step="0.01" placeholder="0.00" required />
-            </label>
-            <label>Data (referência)
-              <input type="date" id="data" />
-            </label>
-          </div>
-
-          <div class="actions">
-            <button type="submit" class="btn primary">Adicionar</button>
-            <button type="button" id="limpar" class="btn danger">Limpar tudo</button>
-          </div>
-        </form>
-        <p class="note">
-          Observação: a <strong>Data</strong> é a referência informada. O sistema também salva automaticamente a data e hora de registro.
-        </p>
-      </section>
-
-      <!-- === LANÇAMENTOS === -->
-      <section class="card" id="lancamentos-section">
-        <h2>📋 Lançamentos (Receitas e Despesas)</h2>
-
-        <div class="table-actions">
-          <button id="addReceita" class="btn">+ Receita</button>
-          <button id="addDespesa" class="btn">+ Despesa</button>
+          <label>Tipo
+            <select id="tipo" required>
+              <option value="">--Tipo--</option>
+              <option value="Receita">Receita</option>
+              <option value="Despesa">Despesa</option>
+              <option value="Investimento">Investimento</option>
+              <option value="Saque">Saque (Retirada de Investimento)</option>
+            </select>
+          </label>
         </div>
 
-        <table id="tabela-lancamentos" data-sortAsc="true">
-          <thead>
-            <tr>
-              <th class="sortable">Data</th>
-              <th class="sortable">Descrição</th>
-              <th class="sortable">Valor</th>
-              <th>Data Registro</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </section>
+        <label>Descrição
+          <input type="text" id="descricao" placeholder="Ex: Salário / Conta de luz / Aporte Tesouro" required />
+        </label>
 
-      <!-- === INVESTIMENTOS === -->
-      <section class="card" id="investimentos-section">
-        <h2>📈 Investimentos</h2>
-
-        <div class="table-actions">
-          <button id="addInvestimento" class="btn">+ Aporte</button>
-          <button id="addSaque" class="btn">💸 Saque</button>
+        <div class="row">
+          <label>Valor (R$)
+            <input type="number" id="valor" step="0.01" placeholder="0.00" required />
+          </label>
+          <label>Data (referência)
+            <input type="date" id="data" />
+          </label>
         </div>
 
-        <table id="tabela-investimentos" data-sortAsc="true">
-          <thead>
-            <tr>
-              <th class="sortable">Data</th>
-              <th class="sortable">Descrição</th>
-              <th class="sortable">Valor</th>
-              <th>Data Registro</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-
-        <div class="invest-summary">
-          <p>Total Receitas: <strong id="total-receitas">R$ 0,00</strong></p>
-          <p>Total Despesas: <strong id="total-despesas">R$ 0,00</strong></p>
-          <p>Total Investimentos: <strong id="total-invest">R$ 0,00</strong></p>
-          <p>Saldo Geral: <strong id="saldo-geral">R$ 0,00</strong></p>
+        <div class="actions">
+          <button type="submit" class="btn primary">Adicionar</button>
+          <button type="button" id="limpar" class="btn danger">Limpar tudo</button>
         </div>
-      </section>
-    </main>
+      </form>
+      <p class="note">
+        Observação: a <strong>Data</strong> é a referência informada. O sistema também salva automaticamente a data e hora de registro.
+      </p>
+    </section>
 
-    <footer>
-      <p>Aplicativo simples — v3.0 | Desenvolvido por Bruno Cesário</p>
-    </footer>
-  </div>
+    <!-- === LANÇAMENTOS === -->
+    <section class="card" id="lancamentos-section">
+      <h2>📋 Lançamentos (Receitas e Despesas)</h2>
+      <table id="tabela-lancamentos" data-sortAsc="true">
+        <thead>
+          <tr>
+            <th class="sortable">Data</th>
+            <th class="sortable">Descrição</th>
+            <th class="sortable">Valor</th>
+            <th>Tipo</th>
+            <th>Data Registro</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
 
-  <!-- === SCRIPTS === -->
+    <!-- === INVESTIMENTOS === -->
+    <section class="card" id="investimentos-section">
+      <h2>📈 Investimentos</h2>
+      <table id="tabela-investimentos" data-sortAsc="true">
+        <thead>
+          <tr>
+            <th class="sortable">Data</th>
+            <th class="sortable">Descrição</th>
+            <th class="sortable">Valor</th>
+            <th>Tipo</th>
+            <th>Data Registro</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <div class="invest-summary">
+        <p>Total Investido: <strong id="total-investido">R$ 0,00</strong></p>
+        <p>Total Sacado: <strong id="total-sacado">R$ 0,00</strong></p>
+        <p>Saldo Investimentos: <strong id="saldo-investimentos">R$ 0,00</strong></p>
+      </div>
+    </section>
+
+    <!-- === RESUMO === -->
+    <section class="card" id="resumo-section">
+      <h2>Resumo</h2>
+      <div class="resumos">
+        <div class="mini"><h3>Bruno</h3><div id="saldo-bruno">R$ 0,00</div></div>
+        <div class="mini"><h3>Giovana</h3><div id="saldo-giovana">R$ 0,00</div></div>
+        <div class="mini"><h3>Casal</h3><div id="saldo-total">R$ 0,00</div></div>
+      </div>
+    </section>
+  </main>
+
+  <footer><p>Aplicativo simples — v3.0</p></footer>
+
   <script src="main.js"></script>
   <script src="script.js"></script>
 </body>
