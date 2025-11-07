@@ -182,4 +182,63 @@ function renderUserList() {
   });
 }
 
+function showBackupScreen() {
+  hideAll();
+  document.getElementById("backup-screen").classList.remove("hidden");
+}
+
+function exportBackup() {
+  const users = JSON.parse(localStorage.getItem("users")) || [];
+  const dataKey = `finance_${currentUser.username}`;
+  const financeData = JSON.parse(localStorage.getItem(dataKey)) || [];
+
+  const backup = {
+    users,
+    financeData
+  };
+
+  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "backup_finance_app.json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function restoreBackup() {
+  try {
+    const input = document.getElementById("restore-input").value;
+    const backup = JSON.parse(input);
+
+    if (backup.users) localStorage.setItem("users", JSON.stringify(backup.users));
+    if (backup.financeData && currentUser) {
+      const key = `finance_${currentUser.username}`;
+      localStorage.setItem(key, JSON.stringify(backup.financeData));
+    }
+
+    alert("Backup restaurado com sucesso!");
+  } catch (e) {
+    alert("Erro ao restaurar backup. Verifique o formato.");
+  }
+}
+
+function exportToExcel() {
+  const key = `finance_${currentUser.username}`;
+  const data = JSON.parse(localStorage.getItem(key)) || [];
+
+  let csv = "Tipo,Valor,Categoria,Data\n";
+  data.forEach(d => {
+    csv += `${d.type},${d.value},${d.category},${d.date}\n`;
+  });
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "dados_financeiros.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 showLogin();

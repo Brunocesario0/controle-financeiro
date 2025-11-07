@@ -40,6 +40,7 @@
       <button onclick="addTransaction()">Adicionar</button>
       <button onclick="showChart()">Ver Gráficos</button>
       <button onclick="showUserManagement()">Gerenciar Usuários</button>
+      <button onclick="showBackupScreen()">Backup e Restauração</button>
     </div>
 
     <!-- Tela de Gráficos -->
@@ -48,6 +49,20 @@
       <canvas id="financeChart"></canvas>
       <button onclick="showDataScreen()">Voltar</button>
     </div>
+    
+    <!-- Tela de Backup e Restauração -->
+<div id="backup-screen" class="screen hidden">
+  <h2>Backup e Restauração</h2>
+
+  <button onclick="exportBackup()">Exportar Backup (JSON)</button>
+  <button onclick="exportToExcel()">Exportar para Excel</button>
+
+  <h3>Restaurar Backup</h3>
+  <textarea id="restore-input" rows="6" placeholder="Cole aqui o JSON de backup"></textarea>
+  <button onclick="restoreBackup()">Restaurar</button>
+
+  <button onclick="showDataScreen()">Voltar</button>
+</div>
 
     <!-- Tela de Gerenciamento de Usuários -->
     <div id="user-screen" class="screen hidden">
