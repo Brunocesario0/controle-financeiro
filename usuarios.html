@@ -10,7 +10,7 @@
   <header>
     <h1>👤 Gerenciamento de Usuários</h1>
     <div class="user-bar">
-      <span id="userInfo"></span>
+      <button id="voltar" class="btn secondary">⬅️ Voltar</button>
       <button id="logout" class="btn danger">Sair</button>
     </div>
   </header>
@@ -61,5 +61,18 @@
   </footer>
 
   <script src="script.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const user = JSON.parse(localStorage.getItem("cf_user"));
+      if (!user || user.role !== "master") {
+        alert("Acesso restrito ao usuário master!");
+        window.location.href = "index.html";
+      }
+
+      document.getElementById("voltar").addEventListener("click", () => {
+        window.location.href = "index.html";
+      });
+    });
+  </script>
 </body>
 </html>

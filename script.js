@@ -210,3 +210,58 @@ function setupBackupPage(sess) {
     });
   }
 }
+// =================== LOGIN E PERMISSÕES =====================
+
+// Cria usuário master se não existir
+function initMaster() {
+  let users = JSON.parse(localStorage.getItem(USERS_KEY)) || [];
+  if (!users.find(u => u.email === "bruno.cesario@outlook.com")) {
+    users.push({
+      email: "bruno.cesario@outlook.com",
+      password: "zxasQW!@",
+      role: "master",
+      active: true,
+      lastLogin: null,
+      created: new Date().toISOString(),
+    });
+    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+  }
+}
+initMaster();
+
+// Login
+function login(email, password) {
+  const users = JSON.parse(localStorage.getItem(USERS_KEY)) || [];
+  const user = users.find(u => u.email === email && u.password === password && u.active !== false);
+  if (user) {
+    user.lastLogin = new Date().toISOString();
+    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    localStorage.setItem(LOGGED_KEY, JSON.stringify(user));
+    window.location.href = "index.html";
+  } else {
+    alert("Usuário ou senha inválidos, ou conta bloqueada.");
+  }
+}
+
+// Logout
+function logout() {
+  localStorage.removeItem(LOGGED_KEY);
+  window.location.href = "login.html";
+}
+
+// Controle de menu por tipo de usuário
+document.addEventListener("DOMContentLoaded", () => {
+  const user = JSON.parse(localStorage.getItem(LOGGED_KEY));
+
+  const logoutBtn = document.getElementById("logout");
+  if (logoutBtn) logoutBtn.addEventListener("click", logout);
+
+  if (user) {
+    // Esconde o menu de usuários se não for master
+    const menuUsuarios = document.getElementById("menuUsuarios");
+    if (menuUsuarios && user.role !== "master") {
+      menuUsuarios.style.display = "none";
+    }
+  }
+});
+
