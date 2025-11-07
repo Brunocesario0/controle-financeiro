@@ -1,8 +1,9 @@
-// armazenamento local
-const STORAGE_KEY = "cf_casal_v2";
+// v2.2 - armazenamento local com dataRegistro, cores, saque e resumo de investimentos
+
+const STORAGE_KEY = "cf_casal_v2.2";
 let registros = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 
-// elementos DOM
+// DOM
 const form = document.getElementById("finance-form");
 const tabelaLanc = document.querySelector("#tabela-lancamentos tbody");
 const tabelaInv = document.querySelector("#tabela-investimentos tbody");
@@ -13,99 +14,123 @@ const saldoBrunoEl = document.getElementById("saldo-bruno");
 const saldoGiovanaEl = document.getElementById("saldo-giovana");
 const saldoTotalEl = document.getElementById("saldo-total");
 
+const totalInvestidoEl = document.getElementById("total-investido");
+const totalSacadoEl = document.getElementById("total-sacado");
+const saldoInvestimentosEl = document.getElementById("saldo-investimentos");
+
 const exportLancBtn = document.getElementById("export-lancamentos");
 const exportInvBtn = document.getElementById("export-investimentos");
 const exportAllBtn = document.getElementById("export-tudo");
 const limparBtn = document.getElementById("limpar");
 
-// util helpers
+// helpers
 const hojePadrao = () => new Date().toISOString().split('T')[0];
+const agoraISO = () => new Date().toISOString();
 const fmt = v => 'R$ ' + Number(v || 0).toFixed(2);
+const novoId = () => Date.now().toString(36) + Math.floor(Math.random()*9999).toString(36);
+const escapeHtml = (t) => t ? String(t).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;") : "";
 
-// carregar e salvar
-function salvar() {
+// persistência
+function salvar(){
   localStorage.setItem(STORAGE_KEY, JSON.stringify(registros));
 }
 
-function novoId() {
-  return Date.now() + Math.floor(Math.random()*999);
+// lógica de saldo
+function calcularSaldoPorPessoa(nome){
+  const arr = registros.filter(r => r.pessoa === nome);
+  let saldo = 0;
+  for (const r of arr) {
+    if (r.tipo === "Receita") saldo += Number(r.valor);
+    else if (r.tipo === "Despesa") saldo -= Number(r.valor);
+    else if (r.tipo === "Investimento") saldo -= Number(r.valor); // aplica como saída
+    else if (r.tipo === "Saque") saldo += Number(r.valor); // saque retorna para caixa
+  }
+  return saldo;
 }
 
-// render
-function atualizarTabelas() {
-  // filtros
-  const pessoaFiltro = filtroPessoa.value || "all";
-  const tipoFiltro = filtroTipo.value || "all";
+function calcularResumoInvestimentos(){
+  const invs = registros.filter(r => r.tipo === "Investimento");
+  const saques = registros.filter(r => r.tipo === "Saque");
+  const totalInvestido = invs.reduce((s,v)=> s + Number(v.valor),0);
+  const totalSacado = saques.reduce((s,v)=> s + Number(v.valor),0);
+  return { totalInvestido, totalSacado, saldoInvestimentos: totalInvestido - totalSacado };
+}
 
+// render das tabelas (ordenar por dataRegistro decrescente)
+function atualizarTabelas(){
   tabelaLanc.innerHTML = "";
   tabelaInv.innerHTML = "";
 
-  const lancamentos = registros.filter(r => r.tipo === "Receita" || r.tipo === "Despesa");
-  const investimentos = registros.filter(r => r.tipo === "Investimento");
+  const pessoaFiltro = filtroPessoa.value || "all";
+  const tipoFiltro = filtroTipo.value || "all";
 
-  // Lançamentos (aplica filtros)
+  // separa registros
+  const lancamentos = registros.filter(r => r.tipo === "Receita" || r.tipo === "Despesa");
+  const investimentos = registros.filter(r => r.tipo === "Investimento" || r.tipo === "Saque");
+
+  // ordenar por dataRegistro (mais recente primeiro)
+  lancamentos.sort((a,b) => (b.dataRegistro || "").localeCompare(a.dataRegistro || ""));
+  investimentos.sort((a,b) => (b.dataRegistro || "").localeCompare(a.dataRegistro || ""));
+
+  // aplicar filtros e renderizar lançamentos (Receita/Despesa)
   const lancFiltrados = lancamentos.filter(r => {
     if (pessoaFiltro !== "all" && r.pessoa !== pessoaFiltro) return false;
     if (tipoFiltro !== "all" && r.tipo !== tipoFiltro) return false;
     return true;
   });
 
-  lancFiltrados.forEach((item) => {
+  for (const item of lancFiltrados) {
     const tr = document.createElement("tr");
+    const valorClass = (item.tipo === "Receita" || item.tipo === "Investimento") ? "positivo" : "negativo";
     tr.innerHTML = `
       <td>${item.pessoa}</td>
       <td>${escapeHtml(item.descricao)}</td>
-      <td>${fmt(item.valor)}</td>
+      <td class="${valorClass}">${fmt(item.tipo === "Receita" ? item.valor : -item.valor)}</td>
       <td>${item.tipo}</td>
       <td>${item.data}</td>
-      <td>
-        <button onclick="removerRegistro('${item.id}')" title="Remover">🗑️</button>
-      </td>
+      <td>${item.dataRegistro ? (new Date(item.dataRegistro)).toLocaleString() : ""}</td>
+      <td><button onclick="removerRegistro('${item.id}')">🗑️</button></td>
     `;
     tabelaLanc.appendChild(tr);
-  });
+  }
 
-  // Investimentos (sem filtros de pessoa/tipo aplicados aqui)
-  investimentos.forEach((item) => {
+  // render investimentos (Investimento e Saque)
+  for (const item of investimentos) {
     const tr = document.createElement("tr");
+    // Investimento aparece verde (positivo visualmente), Saque vermelho
+    const valorClass = (item.tipo === "Investimento") ? "positivo" : "negativo";
+    // exibir valor: aportes como - do caixa (mostrar negativo?) -> para exibir visual, seguimos seu pedido:
+    // Investimento mostra em verde (mas a lógica deduz do saldo); Saque em vermelho (retirada)
+    const displayed = item.tipo === "Saque" ? `-${fmt(item.valor)}` : `${fmt(item.valor)}`;
     tr.innerHTML = `
       <td>${item.pessoa}</td>
       <td>${escapeHtml(item.descricao)}</td>
-      <td>${fmt(item.valor)}</td>
+      <td class="${valorClass}">${displayed}</td>
+      <td>${item.tipo}</td>
       <td>${item.data}</td>
-      <td>
-        <button onclick="removerRegistro('${item.id}')" title="Remover">🗑️</button>
-      </td>
+      <td>${item.dataRegistro ? (new Date(item.dataRegistro)).toLocaleString() : ""}</td>
+      <td><button onclick="removerRegistro('${item.id}')">🗑️</button></td>
     `;
     tabelaInv.appendChild(tr);
-  });
+  }
 
   atualizarResumo();
 }
 
-// evita injeção simples ao mostrar texto
-function escapeHtml(text){
-  if(!text) return "";
-  return text.replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
-}
-
+// atualiza resumos na UI
 function atualizarResumo(){
-  const bruno = registros.filter(r => r.pessoa === "Bruno");
-  const giovana = registros.filter(r => r.pessoa === "Giovana");
-
-  const soma = arr => arr.reduce((acc, r) => {
-    if (r.tipo === "Receita") return acc + Number(r.valor);
-    // Despesa e Investimento deduzem do saldo
-    return acc - Number(r.valor);
-  }, 0);
-
-  const saldoBruno = soma(bruno);
-  const saldoGiovana = soma(giovana);
+  const saldoBruno = calcularSaldoPorPessoa("Bruno");
+  const saldoGiovana = calcularSaldoPorPessoa("Giovana");
   const total = saldoBruno + saldoGiovana;
 
   saldoBrunoEl.textContent = fmt(saldoBruno);
   saldoGiovanaEl.textContent = fmt(saldoGiovana);
   saldoTotalEl.textContent = fmt(total);
+
+  const invResumo = calcularResumoInvestimentos();
+  totalInvestidoEl.textContent = fmt(invResumo.totalInvestido);
+  totalSacadoEl.textContent = fmt(invResumo.totalSacado);
+  saldoInvestimentosEl.textContent = fmt(invResumo.saldoInvestimentos);
 }
 
 // adicionar novo registro
@@ -122,9 +147,17 @@ form.addEventListener("submit", (e) => {
     return;
   }
 
+  // se tipo for Saque e não houver investimentos suficientes, permitimos (sem bloqueio)
+  // (poderíamos validar aqui se desejar)
+
   const registro = {
-    id: novoId().toString(),
-    pessoa, tipo, descricao, valor: Number(valor), data
+    id: novoId(),
+    pessoa,
+    tipo,
+    descricao,
+    valor: Number(valor),
+    data,
+    dataRegistro: agoraISO()
   };
 
   registros.push(registro);
@@ -134,7 +167,7 @@ form.addEventListener("submit", (e) => {
   atualizarTabelas();
 });
 
-// remover por id
+// remover
 window.removerRegistro = function(id){
   if(!confirm("Remover esse registro?")) return;
   registros = registros.filter(r => r.id !== id);
@@ -150,13 +183,13 @@ limparBtn.addEventListener("click", () => {
   atualizarTabelas();
 });
 
-// export CSV util
+// export CSV (ordenado por data (manual) crescente)
 function toCSV(rows, headers){
-  const esc = v => `"${String(v||"").replaceAll('"','""')}"`;
+  const esc = v => `"${String(v===undefined?"":v).replaceAll('"','""')}"`;
   let csv = headers.map(esc).join(",") + "\n";
-  rows.forEach(r => {
-    csv += headers.map(h => esc(r[h]===undefined?"":r[h])).join(",") + "\n";
-  });
+  for (const r of rows) {
+    csv += headers.map(h => esc(r[h])).join(",") + "\n";
+  }
   return csv;
 }
 
@@ -170,24 +203,29 @@ function downloadCSV(filename, content){
   URL.revokeObjectURL(url);
 }
 
-// exports
+// exportar lançamentos (Receita/Despesa) ordenados por data (referência) asc
 exportLancBtn.addEventListener("click", () => {
-  const lancamentos = registros.filter(r => r.tipo === "Receita" || r.tipo === "Despesa");
-  const rows = lancamentos.map(r => ({ pessoa: r.pessoa, descricao: r.descricao, valor: r.valor, tipo: r.tipo, data: r.data }));
-  const csv = toCSV(rows, ["pessoa","descricao","valor","tipo","data"]);
+  const lanc = registros.filter(r => r.tipo === "Receita" || r.tipo === "Despesa");
+  lanc.sort((a,b) => (a.data || "").localeCompare(b.data || "") || (a.dataRegistro||"").localeCompare(b.dataRegistro||""));
+  const rows = lanc.map(r => ({ pessoa: r.pessoa, descricao: r.descricao, valor: r.valor, tipo: r.tipo, data: r.data, dataRegistro: r.dataRegistro }));
+  const csv = toCSV(rows, ["pessoa","descricao","valor","tipo","data","dataRegistro"]);
   downloadCSV("lancamentos.csv", csv);
 });
 
+// exportar investimentos (Investimento e Saque)
 exportInvBtn.addEventListener("click", () => {
-  const invs = registros.filter(r => r.tipo === "Investimento");
-  const rows = invs.map(r => ({ pessoa: r.pessoa, descricao: r.descricao, valor: r.valor, data: r.data }));
-  const csv = toCSV(rows, ["pessoa","descricao","valor","data"]);
+  const inv = registros.filter(r => r.tipo === "Investimento" || r.tipo === "Saque");
+  inv.sort((a,b) => (a.data || "").localeCompare(b.data || "") || (a.dataRegistro||"").localeCompare(b.dataRegistro||""));
+  const rows = inv.map(r => ({ pessoa: r.pessoa, descricao: r.descricao, valor: r.valor, tipo: r.tipo, data: r.data, dataRegistro: r.dataRegistro }));
+  const csv = toCSV(rows, ["pessoa","descricao","valor","tipo","data","dataRegistro"]);
   downloadCSV("investimentos.csv", csv);
 });
 
+// exportar tudo
 exportAllBtn.addEventListener("click", () => {
-  const rows = registros.map(r => ({ pessoa: r.pessoa, descricao: r.descricao, valor: r.valor, tipo: r.tipo, data: r.data }));
-  const csv = toCSV(rows, ["pessoa","descricao","valor","tipo","data"]);
+  const all = [...registros].sort((a,b) => (a.data || "").localeCompare(b.data || "") || (a.dataRegistro||"").localeCompare(b.dataRegistro||""));
+  const rows = all.map(r => ({ pessoa: r.pessoa, descricao: r.descricao, valor: r.valor, tipo: r.tipo, data: r.data, dataRegistro: r.dataRegistro }));
+  const csv = toCSV(rows, ["pessoa","descricao","valor","tipo","data","dataRegistro"]);
   downloadCSV("controle_financeiro_tudo.csv", csv);
 });
 
@@ -195,9 +233,8 @@ exportAllBtn.addEventListener("click", () => {
 filtroPessoa.addEventListener("change", atualizarTabelas);
 filtroTipo.addEventListener("change", atualizarTabelas);
 
-// inicialização
+// init
 document.addEventListener("DOMContentLoaded", () => {
-  // se não tiver data predefinida, coloca hoje
   if(!document.getElementById("data").value) document.getElementById("data").value = hojePadrao();
   atualizarTabelas();
 });

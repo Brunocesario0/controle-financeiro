@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Controle Financeiro em Casal — v2.1</title>
+  <title>Controle Financeiro em Casal — v2.2</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
     <h1>💰 Controle Financeiro em Casal</h1>
-    <p>Registre Receitas, Despesas e Investimentos (investimentos ficam em lista separada).</p>
+    <p>Receitas, Despesas, Investimentos e Saques — agora com cores, data de registro e resumo de investimentos.</p>
   </header>
 
   <main class="container">
@@ -31,19 +31,20 @@
               <option value="Receita">Receita</option>
               <option value="Despesa">Despesa</option>
               <option value="Investimento">Investimento</option>
+              <option value="Saque">Saque (Retirada de Investimento)</option>
             </select>
           </label>
         </div>
 
         <label>Descrição
-          <input type="text" id="descricao" placeholder="Ex: Conta de luz / Aporte Tesouro" required />
+          <input type="text" id="descricao" placeholder="Ex: Salário / Conta de luz / Aporte Tesouro" required />
         </label>
 
         <div class="row">
           <label>Valor (R$)
             <input type="number" id="valor" step="0.01" placeholder="0.00" required />
           </label>
-          <label>Data
+          <label>Data (referência)
             <input type="date" id="data" />
           </label>
         </div>
@@ -53,6 +54,8 @@
           <button type="button" id="limpar" class="btn danger">Limpar tudo</button>
         </div>
       </form>
+
+      <p class="note">Observação: a <strong>Data</strong> é a referência que você informa. O sistema também salva automaticamente a data e hora de registro para ordenar cronologicamente os lançamentos reais.</p>
     </section>
 
     <section class="card" id="lancamentos-section">
@@ -78,7 +81,7 @@
       <table id="tabela-lancamentos">
         <thead>
           <tr>
-            <th>Quem</th><th>Descrição</th><th>Valor</th><th>Tipo</th><th>Data</th><th>Ações</th>
+            <th>Quem</th><th>Descrição</th><th>Valor</th><th>Tipo</th><th>Data (ref.)</th><th>Data Registro</th><th>Ações</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -92,10 +95,16 @@
       </div>
       <table id="tabela-investimentos">
         <thead>
-          <tr><th>Quem</th><th>Descrição</th><th>Valor</th><th>Data</th><th>Ações</th></tr>
+          <tr><th>Quem</th><th>Descrição</th><th>Valor</th><th>Tipo</th><th>Data (ref.)</th><th>Data Registro</th><th>Ações</th></tr>
         </thead>
         <tbody></tbody>
       </table>
+
+      <div class="invest-summary">
+        <p>Total Investido: <strong id="total-investido">R$ 0,00</strong></p>
+        <p>Total Sacado: <strong id="total-sacado">R$ 0,00</strong></p>
+        <p>Saldo em Investimentos: <strong id="saldo-investimentos">R$ 0,00</strong></p>
+      </div>
     </section>
 
     <section class="card" id="resumo-section">
@@ -122,7 +131,7 @@
   </main>
 
   <footer>
-    <p>Aplicativo simples — v2.1</p>
+    <p>Aplicativo simples — v2.2</p>
   </footer>
 
   <script src="script.js"></script>
