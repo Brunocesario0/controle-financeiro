@@ -32,6 +32,19 @@ function hideAll() {
   document.querySelectorAll(".screen").forEach(el => el.classList.add("hidden"));
 }
 
+// Inicializa usuário master padrão
+(function initializeMasterUser() {
+  const users = JSON.parse(localStorage.getItem("users")) || [];
+  const masterEmail = "bruno.cesario@outlook.com";
+  const masterPassword = btoa("zxasQW!@");
+
+  const exists = users.some(u => u.username === masterEmail);
+  if (!exists) {
+    users.push({ username: masterEmail, password: masterPassword, isMaster: true });
+    localStorage.setItem("users", JSON.stringify(users));
+  }
+})();
+
 function register() {
   const username = document.getElementById("register-username").value;
   const password = btoa(document.getElementById("register-password").value);
