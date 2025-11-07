@@ -23,6 +23,21 @@ header nav a, header nav button {
   cursor: pointer;
 }
 
+nav a, nav button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+nav button:hover, nav a:hover {
+  background: #0056b3;
+}
+
 .container {
   max-width: 1000px;
   margin: 20px auto;
@@ -106,6 +121,15 @@ th, td {
 
 th {
   background: #f0f0f0;
+}
+
+nav ul {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  gap: 15px;
+  padding: 0;
+  margin: 0;
 }
 
 .btn.primary { background: #007bff; color: #fff; }

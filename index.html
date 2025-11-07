@@ -1,36 +1,41 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Painel Financeiro</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — Controle Financeiro</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>💰 Controle Financeiro — Painel</h1>
-    <nav>
-      <ul id="menu">
-        <li><a href="insercao.html">Inserir Dados</a></li>
-        <li><a href="graficos.html">Gráficos</a></li>
-        <li><a href="backup.html">Backup</a></li>
-        <li id="menuUsuarios"><a href="usuarios.html">Usuários</a></li>
-        <li><button id="logout" class="btn danger">Sair</button></li>
-      </ul>
-    </nav>
-  </header>
-
   <main class="container">
-    <section class="card">
-      <h2>Bem-vindo ao Controle Financeiro</h2>
-      <p>Selecione uma das opções no menu acima para gerenciar receitas, despesas, investimentos e muito mais.</p>
+    <section class="card" style="max-width: 400px; margin: 100px auto;">
+      <h2>🔐 Acesso ao Sistema</h2>
+      <form id="login-form">
+        <label>E-mail
+          <input type="email" id="email" required placeholder="usuario@exemplo.com">
+        </label>
+        <label>Senha
+          <input type="password" id="password" required placeholder="********">
+        </label>
+        <div class="actions">
+          <button type="submit" class="btn primary">Entrar</button>
+        </div>
+      </form>
     </section>
   </main>
 
   <footer>
-    <p>Versão 3.0 — Sistema com Login e Controle de Permissões</p>
+    <p>Versão 3.0 — Login e Controle de Acesso</p>
   </footer>
 
   <script src="script.js"></script>
+  <script>
+    document.getElementById("login-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      login(email, password);
+    });
+  </script>
 </body>
 </html>
