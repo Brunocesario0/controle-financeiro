@@ -1,132 +1,138 @@
-// ===================== LOGIN =====================
+// =============== CONFIGURAÇÃO INICIAL ===============
 document.addEventListener("DOMContentLoaded", () => {
-  const currentPage = window.location.pathname.split("/").pop();
+  const page = window.location.pathname.split("/").pop();
 
-  // Configuração inicial do usuário master
+  // Se não existir usuário master, cria
   if (!localStorage.getItem("usuarios")) {
-    const master = [{
+    const usuarios = [{
       email: "bruno.cesario@outlook.com",
       senha: "zxasQW!@",
       tipo: "master",
-      ultimoLogin: null,
-      bloqueado: false
+      bloqueado: false,
+      ultimoLogin: null
     }];
-    localStorage.setItem("usuarios", JSON.stringify(master));
+    localStorage.setItem("usuarios", JSON.stringify(usuarios));
   }
 
-  // Função de logout
-  const logoutBtn = document.getElementById("logout");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
-      localStorage.removeItem("usuarioLogado");
-      window.location.href = "login.html";
-    });
-  }
-
-  // Página de login
-  if (currentPage === "login.html" || currentPage === "") {
+  // =============== LOGIN ===============
+  if (page === "login.html" || page === "") {
     const form = document.getElementById("loginForm");
-    const msg = document.getElementById("loginMessage");
+    const msg = document.getElementById("loginMsg");
 
     form.addEventListener("submit", (e) => {
       e.preventDefault();
       const email = document.getElementById("email").value.trim();
-      const senha = document.getElementById("password").value.trim();
-
+      const senha = document.getElementById("senha").value.trim();
       const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+
       const user = usuarios.find(u => u.email === email && u.senha === senha);
 
-      if (user && !user.bloqueado) {
-        user.ultimoLogin = new Date().toLocaleString();
-        localStorage.setItem("usuarios", JSON.stringify(usuarios));
-        localStorage.setItem("usuarioLogado", JSON.stringify(user));
-        window.location.href = "index.html";
-      } else {
-        msg.textContent = "Usuário ou senha incorretos ou conta bloqueada.";
+      if (!user) {
+        msg.textContent = "Usuário ou senha incorretos.";
         msg.style.color = "red";
+        return;
       }
+
+      if (user.bloqueado) {
+        msg.textContent = "Este usuário está bloqueado.";
+        msg.style.color = "red";
+        return;
+      }
+
+      user.ultimoLogin = new Date().toLocaleString();
+      localStorage.setItem("usuarios", JSON.stringify(usuarios));
+      localStorage.setItem("usuarioLogado", JSON.stringify(user));
+      window.location.href = "index.html";
     });
   }
 
-  // Verificação de acesso (para todas as páginas)
-  if (currentPage !== "login.html" && currentPage !== "") {
+  // =============== VERIFICAÇÃO DE LOGIN NAS OUTRAS PÁGINAS ===============
+  if (page !== "login.html" && page !== "") {
     const usuarioLogado = JSON.parse(localStorage.getItem("usuarioLogado"));
-    if (!usuarioLogado) window.location.href = "login.html";
+    if (!usuarioLogado) {
+      window.location.href = "login.html";
+      return;
+    }
 
-    // Esconder menu de usuários se não for master
+    // Logout
+    const sair = document.getElementById("logout");
+    if (sair) sair.addEventListener("click", () => {
+      localStorage.removeItem("usuarioLogado");
+      window.location.href = "login.html";
+    });
+
+    // Esconder menu "Usuários" para quem não é master
     const menuUsuarios = document.getElementById("menuUsuarios");
     if (menuUsuarios && usuarioLogado.tipo !== "master") {
       menuUsuarios.style.display = "none";
     }
   }
 
-  // ===================== GERENCIAMENTO DE USUÁRIOS =====================
-  if (currentPage === "usuarios.html") {
+  // =============== GERENCIAMENTO DE USUÁRIOS ===============
+  if (page === "usuarios.html") {
     const tabela = document.querySelector("#tabelaUsuarios tbody");
-    const form = document.getElementById("cadastroUsuarioForm");
+    const form = document.getElementById("formNovoUsuario");
 
-    function renderUsuarios() {
+    function atualizarTabela() {
       const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
       tabela.innerHTML = "";
-      usuarios.forEach((u, index) => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
+      usuarios.forEach((u, i) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
           <td>${u.email}</td>
           <td>${u.tipo}</td>
           <td>${u.ultimoLogin || "-"}</td>
           <td>
-            <button class="btn small danger" data-action="bloquear" data-index="${index}">${u.bloqueado ? "Desbloquear" : "Bloquear"}</button>
-            <button class="btn small danger" data-action="excluir" data-index="${index}">Excluir</button>
+            <button data-acao="bloquear" data-i="${i}" class="btn small">${u.bloqueado ? "Desbloquear" : "Bloquear"}</button>
+            <button data-acao="excluir" data-i="${i}" class="btn small danger">Excluir</button>
           </td>`;
-        tabela.appendChild(row);
+        tabela.appendChild(tr);
       });
     }
 
-    renderUsuarios();
+    atualizarTabela();
 
     tabela.addEventListener("click", (e) => {
-      if (e.target.dataset.action) {
-        const usuarios = JSON.parse(localStorage.getItem("usuarios"));
-        const index = e.target.dataset.index;
-        const action = e.target.dataset.action;
-
-        if (action === "bloquear") {
-          usuarios[index].bloqueado = !usuarios[index].bloqueado;
-        } else if (action === "excluir") {
-          if (usuarios[index].tipo === "master") {
-            alert("Não é possível excluir o usuário master.");
-            return;
-          }
-          usuarios.splice(index, 1);
+      const btn = e.target;
+      if (!btn.dataset.acao) return;
+      const i = btn.dataset.i;
+      const usuarios = JSON.parse(localStorage.getItem("usuarios"));
+      if (btn.dataset.acao === "bloquear") {
+        usuarios[i].bloqueado = !usuarios[i].bloqueado;
+      } else if (btn.dataset.acao === "excluir") {
+        if (usuarios[i].tipo === "master") {
+          alert("Não é possível excluir o usuário master.");
+          return;
         }
-        localStorage.setItem("usuarios", JSON.stringify(usuarios));
-        renderUsuarios();
+        usuarios.splice(i, 1);
       }
+      localStorage.setItem("usuarios", JSON.stringify(usuarios));
+      atualizarTabela();
     });
 
     form.addEventListener("submit", (e) => {
       e.preventDefault();
-      const novoEmail = document.getElementById("novoEmail").value.trim();
-      const novaSenha = document.getElementById("novaSenha").value.trim();
-      const novoTipo = document.getElementById("novoTipo").value;
-
+      const email = document.getElementById("novoEmail").value.trim();
+      const senha = document.getElementById("novaSenha").value.trim();
+      const tipo = document.getElementById("novoTipo").value;
       const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
-      if (usuarios.find(u => u.email === novoEmail)) {
-        alert("Usuário já cadastrado.");
+
+      if (usuarios.find(u => u.email === email)) {
+        alert("Usuário já existe!");
         return;
       }
 
       usuarios.push({
-        email: novoEmail,
-        senha: novaSenha,
-        tipo: novoTipo,
-        ultimoLogin: null,
-        bloqueado: false
+        email,
+        senha,
+        tipo,
+        bloqueado: false,
+        ultimoLogin: null
       });
 
       localStorage.setItem("usuarios", JSON.stringify(usuarios));
-      renderUsuarios();
       form.reset();
+      atualizarTabela();
     });
   }
 });
