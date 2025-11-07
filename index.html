@@ -51,13 +51,20 @@
 
     <!-- Tela de Gerenciamento de Usuários -->
     <div id="user-screen" class="screen hidden">
-      <h2>Usuários</h2>
+      <h2>Gerenciar Usuários</h2>
+      <h3>Criar novo usuário</h3>
+      <input type="text" id="new-user-email" placeholder="Email" />
+      <input type="password" id="new-user-password" placeholder="Senha" />
+      <label><input type="checkbox" id="new-user-master" /> Usuário master</label>
+      <button onclick="createUserFromMaster()">Criar</button>
+      <hr />
+      <h3>Usuários cadastrados</h3>
       <ul id="user-list"></ul>
       <button onclick="showDataScreen()">Voltar</button>
     </div>
   </div>
 
-  <script src="chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

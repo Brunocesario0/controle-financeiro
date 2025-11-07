@@ -1,5 +1,28 @@
 let currentUser = null;
 
+// Inicializa usuário master padrão
+(function initializeMasterUser() {
+  const users = JSON.parse(localStorage.getItem("users")) || [];
+  const masterEmail = "bruno.cesario@outlook.com";
+  const masterPassword = btoa("zxasQW!@");
+
+  const exists = users.some(u => u.username === masterEmail);
+  if (!exists) {
+    users.push({
+      username: masterEmail,
+      password: masterPassword,
+      isMaster: true,
+      isBlocked: false,
+      lastLogin: null
+    });
+    localStorage.setItem("users", JSON.stringify(users));
+  }
+})();
+
+function hideAll() {
+  document.querySelectorAll(".screen").forEach(el => el.classList.add("hidden"));
+}
+
 function showLogin() {
   hideAll();
   document.getElementById("login-screen").classList.remove("hidden");
@@ -28,35 +51,23 @@ function showUserManagement() {
   renderUserList();
 }
 
-function hideAll() {
-  document.querySelectorAll(".screen").forEach(el => el.classList.add("hidden"));
-}
-
-// Inicializa usuário master padrão
-(function initializeMasterUser() {
-  const users = JSON.parse(localStorage.getItem("users")) || [];
-  const masterEmail = "bruno.cesario@outlook.com";
-  const masterPassword = btoa("zxasQW!@");
-
-  const exists = users.some(u => u.username === masterEmail);
-  if (!exists) {
-    users.push({ username: masterEmail, password: masterPassword, isMaster: true });
-    localStorage.setItem("users", JSON.stringify(users));
-  }
-})();
-
 function register() {
   const username = document.getElementById("register-username").value;
   const password = btoa(document.getElementById("register-password").value);
   const isMaster = document.getElementById("register-master").checked;
-  const users = JSON.parse(localStorage.getItem("users")) || [];
 
+  if (!username.includes("@") || !username.includes(".")) {
+    alert("Digite um e-mail válido.");
+    return;
+  }
+
+  const users = JSON.parse(localStorage.getItem("users")) || [];
   if (users.find(u => u.username === username)) {
     alert("Usuário já existe!");
     return;
   }
 
-  users.push({ username, password, isMaster });
+  users.push({ username, password, isMaster, isBlocked: false, lastLogin: null });
   localStorage.setItem("users", JSON.stringify(users));
   alert("Usuário registrado!");
   showLogin();
@@ -73,6 +84,13 @@ function login() {
     return;
   }
 
+  if (user.isBlocked) {
+    alert("Usuário bloqueado.");
+    return;
+  }
+
+  user.lastLogin = new Date().toISOString();
+  localStorage.setItem("users", JSON.stringify(users));
   currentUser = user;
   showDataScreen();
 }
@@ -109,13 +127,57 @@ function renderChart() {
   });
 }
 
+function createUserFromMaster() {
+  const email = document.getElementById("new-user-email").value;
+  const password = btoa(document.getElementById("new-user-password").value);
+  const isMaster = document.getElementById("new-user-master").checked;
+
+  const users = JSON.parse(localStorage.getItem("users")) || [];
+  if (users.find(u => u.username === email)) {
+    alert("Usuário já existe!");
+    return;
+  }
+
+  users.push({ username: email, password, isMaster, isBlocked: false, lastLogin: null });
+  localStorage.setItem("users", JSON.stringify(users));
+  renderUserList();
+  alert("Usuário criado!");
+}
+
+function deleteUser(email) {
+  let users = JSON.parse(localStorage.getItem("users")) || [];
+  users = users.filter(u => u.username !== email);
+  localStorage.setItem("users", JSON.stringify(users));
+  renderUserList();
+}
+
+function toggleBlockUser(email) {
+  const users = JSON.parse(localStorage.getItem("users")) || [];
+  const user = users.find(u => u.username === email);
+  if (user) {
+    user.isBlocked = !user.isBlocked;
+    localStorage.setItem("users", JSON.stringify(users));
+    renderUserList();
+  }
+}
+
 function renderUserList() {
   const users = JSON.parse(localStorage.getItem("users")) || [];
   const list = document.getElementById("user-list");
   list.innerHTML = "";
+
   users.forEach(u => {
     const li = document.createElement("li");
-    li.textContent = `${u.username} ${u.isMaster ? "(Master)" : ""}`;
+    li.innerHTML = `
+      <strong>${u.username}</strong> ${u.isMaster ? "(Master)" : ""}
+      <br>Status: ${u.isBlocked ? "Bloqueado" : "Ativo"}
+      <br>Último login: ${u.lastLogin ? new Date(u.lastLogin).toLocaleString() : "Nunca"}
+      <br>
+      <button onclick="deleteUser('${u.username}')">Excluir</button>
+      <button onclick="toggleBlockUser('${u.username}')">
+        ${u.isBlocked ? "Desbloquear" : "Bloquear"}
+      </button>
+    `;
     list.appendChild(li);
   });
 }
