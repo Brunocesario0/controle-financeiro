@@ -103,10 +103,45 @@ function addTransaction() {
 
   const key = `finance_${currentUser.username}`;
   const data = JSON.parse(localStorage.getItem(key)) || [];
-  data.push({ type, value, category, date });
+  data.push({ user: currentUser.username, type, value, category, date });
   localStorage.setItem(key, JSON.stringify(data));
   alert("Transação adicionada!");
+  renderTables();
 }
+
+function renderTables() {
+  const key = `finance_${currentUser.username}`;
+  const data = JSON.parse(localStorage.getItem(key)) || [];
+
+  const mainBody = document.querySelector("#main-table tbody");
+  const investBody = document.querySelector("#invest-table tbody");
+  mainBody.innerHTML = "";
+  investBody.innerHTML = "";
+
+  data.forEach(d => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${d.user}</td>
+      <td>${d.type}</td>
+      <td class="${d.value >= 0 ? 'value-positive' : 'value-negative'}">R$ ${d.value.toFixed(2)}</td>
+      <td>${d.category}</td>
+      <td>${d.date}</td>
+    `;
+
+    if (d.type === "receita" || d.type === "despesa") {
+      mainBody.appendChild(row);
+    } else if (d.type === "investimento" || d.type === "saque") {
+      investBody.appendChild(row);
+    }
+  });
+}
+
+function showDataScreen() {
+  hideAll();
+  document.getElementById("data-screen").classList.remove("hidden");
+  renderTables();
+}
+
 
 function renderChart() {
   const key = `finance_${currentUser.username}`;

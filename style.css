@@ -106,3 +106,25 @@ label {
   gap: 8px;
   margin-bottom: 15px;
 }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+th, td {
+  padding: 8px;
+  border: 1px solid #ccc;
+  text-align: left;
+}
+
+td.value-positive {
+  color: green;
+  font-weight: bold;
+}
+
+td.value-negative {
+  color: red;
+  font-weight: bold;
+}

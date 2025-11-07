@@ -38,16 +38,45 @@
       <input type="text" id="category" placeholder="Categoria" />
       <input type="date" id="date" />
       <button onclick="addTransaction()">Adicionar</button>
-      <button onclick="showChart()">Ver Gráficos</button>
-      <button onclick="showUserManagement()">Gerenciar Usuários</button>
-      <button onclick="showBackupScreen()">Backup e Restauração</button>
+
     </div>
+
+<h3>Receitas e Despesas</h3>
+<table id="main-table">
+  <thead>
+    <tr>
+      <th>Usuário</th>
+      <th>Tipo</th>
+      <th>Valor</th>
+      <th>Categoria</th>
+      <th>Data</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<h3>Investimentos e Saques</h3>
+<table id="invest-table">
+  <thead>
+    <tr>
+      <th>Usuário</th>
+      <th>Tipo</th>
+      <th>Valor</th>
+      <th>Categoria</th>
+      <th>Data</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
 
     <!-- Tela de Gráficos -->
     <div id="chart-screen" class="screen hidden">
       <h2>Gráficos</h2>
       <canvas id="financeChart"></canvas>
       <button onclick="showDataScreen()">Voltar</button>
+      <button onclick="showChart()">Ver Gráficos</button>
+      <button onclick="showUserManagement()">Gerenciar Usuários</button>
+      <button onclick="showBackupScreen()">Backup e Restauração</button>
     </div>
     
     <!-- Tela de Backup e Restauração -->
