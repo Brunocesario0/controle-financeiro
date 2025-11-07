@@ -17,8 +17,8 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-//000const app = initializeApp(firebaseConfig);
-//000const analytics = getAnalytics(app);
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
 // Inicializa o Firebase
 if (typeof firebase !== "undefined") {
