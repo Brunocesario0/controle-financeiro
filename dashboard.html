@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finance App</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Todas as telas internas -->
+    <div id="data-screen" class="screen">
+      <h2>Inserir Dados Financeiros</h2>
+      <select id="type">
+        <option value="receita">Receita</option>
+        <option value="despesa">Despesa</option>
+        <option value="investimento">Investimento</option>
+        <option value="saque">Saque</option>
+      </select>
+      <input type="number" id="value" placeholder="Valor" />
+      <input type="text" id="category" placeholder="Categoria" />
+      <input type="date" id="date" />
+      <button onclick="addTransaction()">Adicionar</button>
+      <button onclick="showChart()">Ver Gráficos</button>
+      <button onclick="showUserManagement()">Gerenciar Usuários</button>
+      <button onclick="showBackupScreen()">Backup e Restauração</button>
+
+      <h3>Receitas e Despesas</h3>
+      <table id="main-table"><thead><tr><th>Usuário</th><th>Tipo</th><th>Valor</th><th>Categoria</th><th>Data</th></tr></thead><tbody></tbody></table>
+
+      <h3>Investimentos e Saques</h3>
+      <table id="invest-table"><thead><tr><th>Usuário</th><th>Tipo</th><th>Valor</th><th>Categoria</th><th>Data</th></tr></thead><tbody></tbody></table>
+    </div>
+
+    <div id="chart-screen" class="screen hidden">
+      <h2>Gráficos</h2>
+      <canvas id="financeChart"></canvas>
+      <button onclick="showDataScreen()">Voltar</button>
+    </div>
+
+    <div id="user-screen" class="screen hidden">
+      <h2>Gerenciar Usuários</h2>
+      <input type="text" id="new-user-email" placeholder="Email" />
+      <input type="password" id="new-user-password" placeholder="Senha" />
+      <label><input type="checkbox" id="new-user-master" /> Usuário master</label>
+      <button onclick="createUserFromMaster()">Criar</button>
+      <ul id="user-list"></ul>
+      <button onclick="showDataScreen()">Voltar</button>
+    </div>
+
+    <div id="backup-screen" class="screen hidden">
+      <h2>Backup e Restauração</h2>
+      <button onclick="exportBackup()">Exportar Backup (JSON)</button>
+      <button onclick="exportToExcel()">Exportar para Excel</button>
+      <textarea id="restore-input" rows="6" placeholder="Cole aqui o JSON de backup"></textarea>
+      <button onclick="restoreBackup()">Restaurar</button>
+      <button onclick="showDataScreen()">Voltar</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

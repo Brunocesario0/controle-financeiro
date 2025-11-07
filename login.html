@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Finance App</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <div id="login-screen" class="screen">
+      <h2>Login</h2>
+      <input type="text" id="login-username" placeholder="Email" />
+      <input type="password" id="login-password" placeholder="Senha" />
+      <button onclick="login()">Entrar</button>
+      <button onclick="showRegister()">Registrar</button>
+    </div>
+
+    <div id="register-screen" class="screen hidden">
+      <h2>Registrar</h2>
+      <input type="text" id="register-username" placeholder="Email" />
+      <input type="password" id="register-password" placeholder="Senha" />
+      <label><input type="checkbox" id="register-master" /> Usuário master</label>
+      <button onclick="register()">Salvar</button>
+      <button onclick="showLogin()">Voltar</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

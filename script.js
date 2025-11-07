@@ -1,6 +1,7 @@
+// Variável global para armazenar o usuário logado
 let currentUser = null;
 
-// Inicializa usuário master padrão
+// 🟢 Inicializa o usuário master padrão
 (function initializeMasterUser() {
   const users = JSON.parse(localStorage.getItem("users")) || [];
   const masterEmail = "bruno.cesario@outlook.com";
@@ -19,10 +20,12 @@ let currentUser = null;
   }
 })();
 
+// 🔄 Utilitário para esconder todas as telas
 function hideAll() {
   document.querySelectorAll(".screen").forEach(el => el.classList.add("hidden"));
 }
 
+// 🔐 Navegação entre telas (login.html)
 function showLogin() {
   hideAll();
   document.getElementById("login-screen").classList.remove("hidden");
@@ -33,24 +36,7 @@ function showRegister() {
   document.getElementById("register-screen").classList.remove("hidden");
 }
 
-function showDataScreen() {
-  hideAll();
-  document.getElementById("data-screen").classList.remove("hidden");
-}
-
-function showChart() {
-  hideAll();
-  document.getElementById("chart-screen").classList.remove("hidden");
-  renderChart();
-}
-
-function showUserManagement() {
-  if (!currentUser?.isMaster) return alert("Acesso restrito!");
-  hideAll();
-  document.getElementById("user-screen").classList.remove("hidden");
-  renderUserList();
-}
-
+// 📝 Registro de novo usuário
 function register() {
   const username = document.getElementById("register-username").value;
   const password = btoa(document.getElementById("register-password").value);
@@ -73,6 +59,7 @@ function register() {
   showLogin();
 }
 
+// 🔑 Login e redirecionamento para dashboard.html
 function login() {
   const username = document.getElementById("login-username").value;
   const password = btoa(document.getElementById("login-password").value);
@@ -91,10 +78,47 @@ function login() {
 
   user.lastLogin = new Date().toISOString();
   localStorage.setItem("users", JSON.stringify(users));
-  currentUser = user;
-  showDataScreen();
+  localStorage.setItem("loggedUser", JSON.stringify(user));
+  window.location.href = "dashboard.html";
 }
 
+// 🧭 Carrega usuário logado na dashboard
+function loadUser() {
+  const user = JSON.parse(localStorage.getItem("loggedUser"));
+  if (!user) {
+    alert("Sessão expirada. Faça login novamente.");
+    window.location.href = "login.html";
+    return;
+  }
+  currentUser = user;
+}
+
+// 🖥️ Navegação entre telas (dashboard.html)
+function showDataScreen() {
+  hideAll();
+  document.getElementById("data-screen").classList.remove("hidden");
+  renderTables();
+}
+
+function showChart() {
+  hideAll();
+  document.getElementById("chart-screen").classList.remove("hidden");
+  renderChart();
+}
+
+function showUserManagement() {
+  if (!currentUser?.isMaster) return alert("Acesso restrito!");
+  hideAll();
+  document.getElementById("user-screen").classList.remove("hidden");
+  renderUserList();
+}
+
+function showBackupScreen() {
+  hideAll();
+  document.getElementById("backup-screen").classList.remove("hidden");
+}
+
+// ➕ Adiciona transação financeira
 function addTransaction() {
   const type = document.getElementById("type").value;
   const value = parseFloat(document.getElementById("value").value);
@@ -109,6 +133,7 @@ function addTransaction() {
   renderTables();
 }
 
+// 📊 Renderiza tabelas de dados
 function renderTables() {
   const key = `finance_${currentUser.username}`;
   const data = JSON.parse(localStorage.getItem(key)) || [];
@@ -123,26 +148,19 @@ function renderTables() {
     row.innerHTML = `
       <td>${d.user}</td>
       <td>${d.type}</td>
-      <td class="${d.value >= 0 ? 'value-positive' : 'value-negative'}">R$ ${d.value.toFixed(2)}</td>
+      <td class="${d.type === 'receita' || d.type === 'investimento' ? 'value-positive' : 'value-negative'}">R$ ${d.value.toFixed(2)}</td>
       <td>${d.category}</td>
       <td>${d.date}</td>
     `;
-
     if (d.type === "receita" || d.type === "despesa") {
       mainBody.appendChild(row);
-    } else if (d.type === "investimento" || d.type === "saque") {
+    } else {
       investBody.appendChild(row);
     }
   });
 }
 
-function showDataScreen() {
-  hideAll();
-  document.getElementById("data-screen").classList.remove("hidden");
-  renderTables();
-}
-
-
+// 📈 Renderiza gráfico de receitas vs despesas
 function renderChart() {
   const key = `finance_${currentUser.username}`;
   const data = JSON.parse(localStorage.getItem(key)) || [];
@@ -162,6 +180,7 @@ function renderChart() {
   });
 }
 
+// 👥 Gerenciamento de usuários
 function createUserFromMaster() {
   const email = document.getElementById("new-user-email").value;
   const password = btoa(document.getElementById("new-user-password").value);
@@ -217,21 +236,13 @@ function renderUserList() {
   });
 }
 
-function showBackupScreen() {
-  hideAll();
-  document.getElementById("backup-screen").classList.remove("hidden");
-}
-
+// 💾 Backup e restauração
 function exportBackup() {
   const users = JSON.parse(localStorage.getItem("users")) || [];
   const dataKey = `finance_${currentUser.username}`;
   const financeData = JSON.parse(localStorage.getItem(dataKey)) || [];
 
-  const backup = {
-    users,
-    financeData
-  };
-
+  const backup = { users, financeData };
   const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -239,7 +250,7 @@ function exportBackup() {
   a.download = "backup_finance_app.json";
   a.click();
   URL.revokeObjectURL(url);
-}
+} // ← esta chave fecha corretamente a função exportBackup()
 
 function restoreBackup() {
   try {
@@ -253,6 +264,7 @@ function restoreBackup() {
     }
 
     alert("Backup restaurado com sucesso!");
+    renderTables();
   } catch (e) {
     alert("Erro ao restaurar backup. Verifique o formato.");
   }
@@ -276,4 +288,8 @@ function exportToExcel() {
   URL.revokeObjectURL(url);
 }
 
-showLogin();
+// Inicializa a dashboard se estiver na página correta
+if (window.location.pathname.includes("dashboard.html")) {
+  loadUser();
+  showDataScreen();
+}
