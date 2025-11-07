@@ -1,61 +1,41 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Painel - Controle Financeiro</title>
+  <title>Painel Financeiro</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
-    <h1>Controle Financeiro Familiar</h1>
-    <div class="user-info">
+    <h1>💸 Controle Financeiro do Casal</h1>
+    <div>
       <span id="usuario-logado"></span>
       <button onclick="logout()">Sair</button>
     </div>
   </header>
 
-  <main>
-    <section class="form-section">
-      <h2>Novo Lançamento</h2>
-      <form id="form-lancamento">
-        <input type="date" id="data" required />
-        <input type="text" id="descricao" placeholder="Descrição" required />
-        <input type="number" id="valor" placeholder="Valor" required />
-        <select id="tipo">
-          <option value="receita">Receita</option>
-          <option value="despesa">Despesa</option>
-          <option value="investimento">Investimento</option>
-          <option value="saque">Saque de Investimento</option>
-        </select>
-        <button type="submit">Adicionar</button>
-      </form>
-    </section>
+  <section id="secao-usuarios" style="display:none;">
+    <h2>Gerenciamento de Usuários</h2>
+    <form id="form-novo-usuario">
+      <input type="email" id="novo-email" placeholder="Novo e-mail" required />
+      <input type="password" id="nova-senha" placeholder="Senha" required />
+      <select id="novo-tipo">
+        <option value="admin">Administrador</option>
+        <option value="usuario">Usuário</option>
+      </select>
+      <button type="submit">Adicionar Usuário</button>
+    </form>
+    <table id="tabela-usuarios">
+      <thead><tr><th>E-mail</th><th>Tipo</th><th>Ações</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
 
-    <section class="tabela-section">
-      <h2>Lançamentos</h2>
-      <table id="tabela-lancamentos">
-        <thead>
-          <tr>
-            <th onclick="ordenarTabela('data')">Data</th>
-            <th onclick="ordenarTabela('descricao')">Descrição</th>
-            <th onclick="ordenarTabela('valor')">Valor</th>
-            <th onclick="ordenarTabela('tipo')">Tipo</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </section>
+  <hr />
 
-    <section class="resumo-section">
-      <h2>Resumo</h2>
-      <p>Saldo total: <span id="saldo"></span></p>
-      <p>Total Investido: <span id="total-investido"></span></p>
-    </section>
-  </main>
+  <main id="app-container"></main>
 
-  <script src="firebase.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

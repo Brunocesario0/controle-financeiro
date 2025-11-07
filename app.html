@@ -1,0 +1,140 @@
+<section>
+  <h2>Lançamentos</h2>
+  <form id="form-lancamento">
+    <input type="date" id="data" required />
+    <input type="text" id="descricao" placeholder="Descrição" required />
+    <input type="number" id="valor" placeholder="Valor (R$)" required />
+    <select id="tipo">
+      <option value="receita">Receita</option>
+      <option value="despesa">Despesa</option>
+      <option value="investimento">Investimento</option>
+      <option value="saque">Saque de Investimento</option>
+    </select>
+    <button type="submit">Adicionar</button>
+  </form>
+
+  <h3>Resumo</h3>
+  <p>Saldo: <span id="saldo">R$ 0,00</span></p>
+  <p>Investimentos: <span id="total-invest">R$ 0,00</span></p>
+
+  <h3>Lançamentos Gerais</h3>
+  <table id="tabela-lancamentos">
+    <thead>
+      <tr>
+        <th onclick="ordenar('data')">Data</th>
+        <th onclick="ordenar('descricao')">Descrição</th>
+        <th onclick="ordenar('valor')">Valor</th>
+        <th onclick="ordenar('tipo')">Tipo</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <h3>Investimentos</h3>
+  <table id="tabela-investimentos">
+    <thead>
+      <tr>
+        <th onclick="ordenarInvest('data')">Data</th>
+        <th onclick="ordenarInvest('descricao')">Descrição</th>
+        <th onclick="ordenarInvest('valor')">Valor</th>
+        <th onclick="ordenarInvest('tipo')">Tipo</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<script>
+function initFinanceApp(user) {
+  let lancamentos = JSON.parse(localStorage.getItem("lancamentos")) || [];
+  let ordem = { campo: "data", asc: true };
+  const tbody = document.querySelector("#tabela-lancamentos tbody");
+  const tbodyInvest = document.querySelector("#tabela-investimentos tbody");
+
+  document.getElementById("form-lancamento").onsubmit = (e) => {
+    e.preventDefault();
+    const data = document.getElementById("data").value;
+    const descricao = document.getElementById("descricao").value;
+    const valor = parseFloat(document.getElementById("valor").value);
+    const tipo = document.getElementById("tipo").value;
+
+    if (!data || !descricao || !valor) return;
+
+    const registro = {
+      id: Date.now(),
+      data,
+      descricao,
+      valor,
+      tipo,
+      criado: new Date().toISOString()
+    };
+
+    lancamentos.push(registro);
+    localStorage.setItem("lancamentos", JSON.stringify(lancamentos));
+    atualizar();
+    e.target.reset();
+  };
+
+  function atualizar() {
+    tbody.innerHTML = "";
+    tbodyInvest.innerHTML = "";
+
+    let saldo = 0, totalInvest = 0;
+
+    lancamentos.sort((a, b) => new Date(a.criado) - new Date(b.criado));
+
+    lancamentos.forEach(l => {
+      if (l.tipo === "investimento" || l.tipo === "saque") {
+        const trI = document.createElement("tr");
+        trI.innerHTML = `
+          <td>${l.data}</td>
+          <td>${l.descricao}</td>
+          <td class="${l.tipo==='saque'?'negativo':'positivo'}">R$ ${l.valor.toFixed(2)}</td>
+          <td>${l.tipo}</td>
+        `;
+        tbodyInvest.appendChild(trI);
+        totalInvest += l.tipo === "investimento" ? l.valor : -l.valor;
+      } else {
+        const tr = document.createElement("tr");
+        const cor = l.tipo === "receita" ? "positivo" : "negativo";
+        tr.innerHTML = `
+          <td>${l.data}</td>
+          <td>${l.descricao}</td>
+          <td class="${cor}">R$ ${l.valor.toFixed(2)}</td>
+          <td>${l.tipo}</td>
+          <td>${user.tipo !== "usuario" ? `<button onclick="remover(${l.id})">🗑️</button>` : ""}</td>
+        `;
+        tbody.appendChild(tr);
+      }
+
+      if (l.tipo === "receita") saldo += l.valor;
+      if (l.tipo === "despesa") saldo -= l.valor;
+      if (l.tipo === "investimento") saldo -= l.valor;
+      if (l.tipo === "saque") saldo += l.valor;
+    });
+
+    document.getElementById("saldo").textContent = "R$ " + saldo.toFixed(2);
+    document.getElementById("total-invest").textContent = "R$ " + totalInvest.toFixed(2);
+  }
+
+  window.remover = (id) => {
+    lancamentos = lancamentos.filter(l => l.id !== id);
+    localStorage.setItem("lancamentos", JSON.stringify(lancamentos));
+    atualizar();
+  };
+
+  window.ordenar = (campo) => {
+    ordem.asc = ordem.campo === campo ? !ordem.asc : true;
+    ordem.campo = campo;
+    lancamentos.sort((a, b) => {
+      if (a[campo] > b[campo]) return ordem.asc ? 1 : -1;
+      if (a[campo] < b[campo]) return ordem.asc ? -1 : 1;
+      return 0;
+    });
+    atualizar();
+  };
+
+  atualizar();
+}
+</script>
