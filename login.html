@@ -3,21 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login — Controle Financeiro</title>
+  <title>Login - Controle Financeiro em Casal</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body class="login-body">
-  <div class="login-container">
-    <h1>💰 Controle Financeiro em Casal</h1>
-    <div class="login-card">
-      <h2>Acesso ao Sistema</h2>
-      <input type="email" id="loginEmail" placeholder="E-mail" required />
-      <input type="password" id="loginSenha" placeholder="Senha" required />
-      <button id="btnLogin" class="btn primary">Entrar</button>
-      <p id="loginMsg" class="msg"></p>
-    </div>
+<body class="login-page">
+  <div class="login-container card">
+    <h2>🔒 Acesso ao Sistema</h2>
+    <form id="login-form">
+      <label>E-mail
+        <input type="email" id="email" placeholder="Digite seu e-mail" required />
+      </label>
+      <label>Senha
+        <input type="password" id="password" placeholder="Digite sua senha" required />
+      </label>
+      <button type="submit" class="btn primary">Entrar</button>
+    </form>
+    <p id="login-error" class="error-message"></p>
   </div>
 
-  <script src="script.js"></script>
+  <script src="login.js"></script>
 </body>
 </html>
