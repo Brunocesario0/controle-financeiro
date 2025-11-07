@@ -1,82 +1,76 @@
 body {
   font-family: Arial, sans-serif;
-  background: #f8fafc;
+  background: #f5f5f5;
+  color: #333;
   margin: 0;
   padding: 0;
 }
 
 header {
-  background: #2563eb;
-  color: white;
-  padding: 10px 20px;
+  background: #004aad;
+  color: #fff;
   display: flex;
   justify-content: space-between;
+  padding: 10px 20px;
   align-items: center;
 }
 
 .login-body {
   display: flex;
-  height: 100vh;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(120deg, #2563eb, #60a5fa);
+  height: 100vh;
 }
 
 .login-container {
-  background: white;
+  background: #fff;
   padding: 30px;
   border-radius: 15px;
-  width: 300px;
   box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  text-align: center;
 }
 
 .login-container input {
+  display: block;
   width: 100%;
   margin: 10px 0;
-  padding: 8px;
+  padding: 10px;
 }
 
 button {
-  background: #2563eb;
+  background: #004aad;
   color: white;
+  padding: 10px 20px;
   border: none;
-  padding: 8px 15px;
-  border-radius: 6px;
+  border-radius: 10px;
   cursor: pointer;
 }
 
 button:hover {
-  background: #1e40af;
+  background: #003d8a;
 }
-
-.hidden { display: none; }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  margin: 10px 0;
-  background: white;
 }
 
 th, td {
-  border: 1px solid #e2e8f0;
+  border-bottom: 1px solid #ccc;
+  text-align: left;
   padding: 8px;
-  text-align: center;
 }
 
-th {
-  background: #f1f5f9;
-  cursor: pointer;
+tr:hover {
+  background: #f0f8ff;
 }
 
-.valor-positivo { color: green; font-weight: bold; }
-.valor-negativo { color: red; font-weight: bold; }
+tr.receita { color: green; }
+tr.despesa { color: red; }
+tr.investimento { color: green; }
+tr.saque { color: red; }
 
-.form-section, .tabelas, .resumo {
-  padding: 20px;
-  margin: 10px auto;
-  max-width: 900px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+.erro {
+  color: red;
+  font-size: 14px;
 }

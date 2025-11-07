@@ -1,22 +1,23 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login - Controle Financeiro</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
-  <script src="firebase.js"></script>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body class="login-body">
   <div class="login-container">
-    <h2>💰 Controle Financeiro Familiar</h2>
-    <input type="email" id="email" placeholder="E-mail">
-    <input type="password" id="senha" placeholder="Senha">
-    <button onclick="login()">Entrar</button>
-    <p><a href="#" onclick="resetSenha()">Esqueci minha senha</a></p>
+    <h1>Controle Financeiro</h1>
+    <form id="login-form">
+      <input type="email" id="email" placeholder="E-mail" required />
+      <input type="password" id="senha" placeholder="Senha" required />
+      <button type="submit">Entrar</button>
+      <p id="erro-login" class="erro"></p>
+      <a href="#" id="esqueci-senha">Esqueci minha senha</a>
+    </form>
   </div>
+  <script src="firebase.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
