@@ -1,127 +1,172 @@
-// =============== CONFIGURAÇÃO DE USUÁRIOS ===============
-const STORAGE_USERS = "usuarios_casal";
-let usuarios = JSON.parse(localStorage.getItem(STORAGE_USERS)) || [];
+// === Controle Financeiro Integrado com Login ===
+// v3.0 - Inclui suporte a permissões e login local
 
-// Cria o master fixo se não existir
-if (!usuarios.find(u => u.email === "bruno.cesario@outlook.com")) {
-  usuarios.push({
-    email: "bruno.cesario@outlook.com",
-    senha: "zxasQW!@",
-    tipo: "master"
-  });
-  localStorage.setItem(STORAGE_USERS, JSON.stringify(usuarios));
+// === Chaves de armazenamento ===
+const STORAGE_KEY = "cf_lancamentos_v3";
+const INVEST_KEY = "cf_investimentos_v3";
+
+// === Dados em memória ===
+let lancamentos = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+let investimentos = JSON.parse(localStorage.getItem(INVEST_KEY)) || [];
+
+// === Utilidades ===
+function salvarDados() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(lancamentos));
+  localStorage.setItem(INVEST_KEY, JSON.stringify(investimentos));
 }
 
-function salvarUsuarios() {
-  localStorage.setItem(STORAGE_USERS, JSON.stringify(usuarios));
+// === Função principal para registrar lançamentos ===
+function adicionarLancamento(tipo, descricao, valor, data) {
+  const dataRegistro = new Date().toLocaleString("pt-BR");
+  const registro = { tipo, descricao, valor: parseFloat(valor), data, dataRegistro };
+  lancamentos.push(registro);
+  salvarDados();
+  atualizarTabelas();
 }
 
-// =============== LOGIN ===============
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("login-form");
-  if (form) {
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      login();
+// === Funções específicas ===
+function adicionarReceita() {
+  const desc = prompt("Descrição da receita:");
+  const val = parseFloat(prompt("Valor:"));
+  const data = prompt("Data (AAAA-MM-DD):");
+  if (desc && val > 0 && data) adicionarLancamento("receita", desc, val, data);
+}
+
+function adicionarDespesa() {
+  const desc = prompt("Descrição da despesa:");
+  const val = parseFloat(prompt("Valor:"));
+  const data = prompt("Data (AAAA-MM-DD):");
+  if (desc && val > 0 && data) adicionarLancamento("despesa", desc, val, data);
+}
+
+function adicionarInvestimento() {
+  const desc = prompt("Descrição do investimento:");
+  const val = parseFloat(prompt("Valor:"));
+  const data = prompt("Data (AAAA-MM-DD):");
+  if (desc && val > 0 && data) {
+    investimentos.push({
+      descricao: desc,
+      valor: val,
+      tipo: "aporte",
+      data,
+      dataRegistro: new Date().toLocaleString("pt-BR"),
     });
-  } else {
-    iniciarApp();
+    salvarDados();
+    atualizarTabelas();
   }
-});
-
-function login() {
-  const email = document.getElementById("email").value.trim();
-  const senha = document.getElementById("senha").value.trim();
-  const msg = document.getElementById("mensagem");
-
-  const user = usuarios.find(u => u.email === email && u.senha === senha);
-
-  if (!user) {
-    msg.textContent = "E-mail ou senha incorretos.";
-    msg.style.color = "red";
-    return;
-  }
-
-  localStorage.setItem("usuarioAtivo", JSON.stringify(user));
-  window.location.href = "main.html";
 }
 
-function logout() {
-  localStorage.removeItem("usuarioAtivo");
-  window.location.href = "index.html";
+function sacarInvestimento() {
+  const desc = prompt("Descrição do saque:");
+  const val = parseFloat(prompt("Valor:"));
+  const data = prompt("Data (AAAA-MM-DD):");
+  if (desc && val > 0 && data) {
+    investimentos.push({
+      descricao: desc,
+      valor: -val,
+      tipo: "saque",
+      data,
+      dataRegistro: new Date().toLocaleString("pt-BR"),
+    });
+    salvarDados();
+    atualizarTabelas();
+  }
 }
 
-// =============== PAINEL PRINCIPAL ===============
-function iniciarApp() {
-  const user = JSON.parse(localStorage.getItem("usuarioAtivo"));
-  if (!user) {
-    window.location.href = "index.html";
-    return;
-  }
-
-  document.getElementById("usuario-logado").textContent =
-    `${user.email} (${user.tipo})`;
-
-  // Se for master, exibe a seção de gerenciamento de usuários
-  if (user.tipo === "master") {
-    document.getElementById("secao-usuarios").style.display = "block";
-    carregarUsuarios();
-  }
-
-  // Carregar o app financeiro
-  carregarAppFinanceiro(user);
+// === Cálculos ===
+function calcularTotais() {
+  const receitas = lancamentos.filter(l => l.tipo === "receita").reduce((a, b) => a + b.valor, 0);
+  const despesas = lancamentos.filter(l => l.tipo === "despesa").reduce((a, b) => a + b.valor, 0);
+  const investimentosTotais = investimentos.reduce((a, b) => a + b.valor, 0);
+  const saldo = receitas - despesas - investimentosTotais;
+  return { receitas, despesas, investimentosTotais, saldo };
 }
 
-// =============== GERENCIAMENTO DE USUÁRIOS ===============
-function carregarUsuarios() {
-  const tbody = document.querySelector("#tabela-usuarios tbody");
+// === Atualização das tabelas ===
+function atualizarTabelas() {
+  atualizarTabela("tabela-lancamentos", lancamentos);
+  atualizarTabela("tabela-investimentos", investimentos, true);
+  atualizarResumo();
+}
+
+// === Atualizar tabela genérica ===
+function atualizarTabela(idTabela, dados, isInvest = false) {
+  const tbody = document.querySelector(`#${idTabela} tbody`);
   tbody.innerHTML = "";
-  usuarios.forEach(u => {
+
+  const ordenados = dados.sort((a, b) => new Date(a.data) - new Date(b.data));
+
+  for (const item of ordenados) {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${u.email}</td>
-      <td>${u.tipo}</td>
-      <td>
-        ${u.tipo !== "master" ? `<button onclick="removerUsuario('${u.email}')">🗑️</button>` : ""}
-      </td>
+      <td>${item.data}</td>
+      <td>${item.descricao}</td>
+      <td class="valor">${item.valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
+      <td>${item.dataRegistro}</td>
+      ${sessaoAtual.tipo === "master" || sessaoAtual.tipo === "admin" ? `<td><button onclick="removerItem('${idTabela}','${item.dataRegistro}')">🗑️</button></td>` : ""}
     `;
-    tbody.appendChild(tr);
-  });
 
-  const formNovo = document.getElementById("form-novo-usuario");
-  formNovo.onsubmit = (e) => {
-    e.preventDefault();
-    const email = document.getElementById("novo-email").value.trim();
-    const senha = document.getElementById("nova-senha").value.trim();
-    const tipo = document.getElementById("novo-tipo").value;
-
-    if (!email || !senha) return alert("Preencha todos os campos!");
-
-    if (usuarios.find(u => u.email === email)) {
-      alert("Usuário já existe!");
-      return;
+    // cores
+    if (item.tipo === "receita" || item.tipo === "aporte") {
+      tr.querySelector(".valor").style.color = "green";
+    } else if (item.tipo === "despesa" || item.tipo === "saque") {
+      tr.querySelector(".valor").style.color = "red";
     }
 
-    usuarios.push({ email, senha, tipo });
-    salvarUsuarios();
-    formNovo.reset();
-    carregarUsuarios();
-  };
+    tbody.appendChild(tr);
+  }
 }
 
-function removerUsuario(email) {
-  if (!confirm("Remover este usuário?")) return;
-  usuarios = usuarios.filter(u => u.email !== email);
-  salvarUsuarios();
-  carregarUsuarios();
+// === Ordenação por coluna ===
+function ordenarTabela(tabelaId, colunaIndex) {
+  const tabela = document.getElementById(tabelaId);
+  const linhas = Array.from(tabela.querySelectorAll("tbody tr"));
+  const asc = tabela.dataset.sortAsc === "true";
+  tabela.dataset.sortAsc = !asc;
+
+  linhas.sort((a, b) => {
+    const aText = a.children[colunaIndex].textContent.replace(/[^\d,-]+/g, "").replace(",", ".");
+    const bText = b.children[colunaIndex].textContent.replace(/[^\d,-]+/g, "").replace(",", ".");
+    const aVal = parseFloat(aText) || aText;
+    const bVal = parseFloat(bText) || bText;
+    return asc ? (aVal > bVal ? 1 : -1) : (aVal < bVal ? 1 : -1);
+  });
+
+  const tbody = tabela.querySelector("tbody");
+  linhas.forEach(l => tbody.appendChild(l));
 }
 
-// =============== APP FINANCEIRO ===============
-function carregarAppFinanceiro(user) {
-  fetch("app.html")
-    .then(r => r.text())
-    .then(html => {
-      document.getElementById("app-container").innerHTML = html;
-      initFinanceApp(user);
-    });
+// === Resumo ===
+function atualizarResumo() {
+  const { receitas, despesas, investimentosTotais, saldo } = calcularTotais();
+  document.getElementById("total-receitas").textContent = receitas.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  document.getElementById("total-despesas").textContent = despesas.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  document.getElementById("total-invest").textContent = investimentosTotais.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  document.getElementById("saldo-geral").textContent = saldo.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+  document.getElementById("saldo-geral").style.color = saldo >= 0 ? "green" : "red";
 }
+
+// === Remover item ===
+function removerItem(tabelaId, dataRegistro) {
+  if (!confirm("Remover este registro?")) return;
+
+  if (tabelaId === "tabela-lancamentos") {
+    lancamentos = lancamentos.filter(i => i.dataRegistro !== dataRegistro);
+  } else {
+    investimentos = investimentos.filter(i => i.dataRegistro !== dataRegistro);
+  }
+  salvarDados();
+  atualizarTabelas();
+}
+
+// === Inicialização ===
+document.addEventListener("DOMContentLoaded", () => {
+  if (sessaoAtual) atualizarTabelas();
+
+  // Habilita ordenação nos cabeçalhos
+  document.querySelectorAll("th.sortable").forEach((th, i) => {
+    const tabelaId = th.closest("table").id;
+    th.addEventListener("click", () => ordenarTabela(tabelaId, i));
+  });
+});
