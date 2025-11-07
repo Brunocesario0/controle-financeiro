@@ -1,267 +1,132 @@
-// script.js - Versão com controle de último login e bloqueio de usuários
-
-/* ---------- CONFIGURAÇÕES ---------- */
-const MASTER = { email: "bruno.cesario@outlook.com", senha: "zxasQW!@", tipo: "master" };
-const USERS_KEY = "cf_usuarios";
-const SESSION_KEY = "cf_sessao_v1";
-const DATA_KEY = "cf_dados_v1";
-
-/* ---------- HELPERS ---------- */
-function loadUsers() {
-  let users = JSON.parse(localStorage.getItem(USERS_KEY)) || [];
-  if (!users.some(u => u.email === MASTER.email)) {
-    users.unshift({ ...MASTER, ultimoLogin: null, bloqueado: false });
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
-  }
-  return JSON.parse(localStorage.getItem(USERS_KEY));
-}
-function saveUsers(list) { localStorage.setItem(USERS_KEY, JSON.stringify(list)); }
-function getSession() { return JSON.parse(localStorage.getItem(SESSION_KEY)); }
-function setSession(user) { localStorage.setItem(SESSION_KEY, JSON.stringify(user)); }
-function clearSession() { localStorage.removeItem(SESSION_KEY); }
-
-/* ---------- LOGIN ---------- */
+// ===================== LOGIN =====================
 document.addEventListener("DOMContentLoaded", () => {
-  const path = window.location.pathname.split("/").pop();
+  const currentPage = window.location.pathname.split("/").pop();
 
-  if (path === "" || path === "index.html" || path === "login.html") {
-    const form = document.getElementById("login-form");
-    if (form) {
-      form.addEventListener("submit", (ev) => {
-        ev.preventDefault();
-        const email = document.getElementById("email").value.trim();
-        const senha = document.getElementById("senha").value.trim();
-        const msg = document.getElementById("login-msg");
-        const users = loadUsers();
-        const user = users.find(u => u.email === email && u.senha === senha);
-
-        if (!user) {
-          msg.style.color = "red";
-          msg.textContent = "Usuário ou senha inválidos.";
-          return;
-        }
-
-        if (user.bloqueado) {
-          msg.style.color = "red";
-          msg.textContent = "Usuário bloqueado. Contate o administrador.";
-          return;
-        }
-
-        // Atualiza data de último login
-        user.ultimoLogin = new Date().toLocaleString("pt-BR");
-        saveUsers(users);
-
-        setSession(user);
-        msg.style.color = "green";
-        msg.textContent = "Login efetuado! Redirecionando...";
-        setTimeout(() => window.location.href = "inserir.html", 600);
-      });
-    }
-    return;
-  }
-
-  /* ---------- PROTEÇÃO DAS PÁGINAS ---------- */
-  const protectedPages = ["inserir.html", "graficos.html", "usuarios.html", "backup.html"];
-  if (protectedPages.includes(path)) {
-    const sess = getSession();
-    if (!sess) {
-      window.location.href = "index.html";
-      return;
-    }
-    setupCommonUI(sess);
-    if (path === "usuarios.html") setupUsersPage(sess);
-    if (path === "backup.html") setupBackupPage(sess);
-  }
-});
-
-/* ---------- UI COMUM ---------- */
-function setupCommonUI(sess) {
-  const btnLogout = document.getElementById("logout");
-  if (btnLogout) btnLogout.addEventListener("click", () => {
-    clearSession();
-    window.location.href = "index.html";
-  });
-
-  const userInfo = document.getElementById("userInfo");
-  if (userInfo) userInfo.textContent = `${sess.email} (${sess.tipo})`;
-
-  const btnGerenciar = document.getElementById("btnGerenciarUsuarios");
-  if (btnGerenciar) btnGerenciar.style.display = (sess.tipo === "master") ? "inline-block" : "none";
-}
-
-/* ---------- PÁGINA DE USUÁRIOS ---------- */
-function setupUsersPage(sess) {
-  const form = document.getElementById("user-form");
-  const tbody = document.querySelector("#user-table tbody");
-  renderUsersTable();
-
-  // Criar novo usuário
-  if (form) {
-    form.addEventListener("submit", (ev) => {
-      ev.preventDefault();
-      if (sess.tipo !== "master") { alert("Apenas o usuário master pode criar novos usuários."); return; }
-      const email = document.getElementById("new-email").value.trim();
-      const senha = document.getElementById("new-password").value.trim();
-      const role = document.getElementById("new-role").value;
-      if (!email || !senha) return alert("Preencha todos os campos.");
-
-      const users = loadUsers();
-      if (users.some(u => u.email === email)) return alert("Usuário já cadastrado.");
-
-      users.push({ email, senha, tipo: role, ultimoLogin: null, bloqueado: false });
-      saveUsers(users);
-      form.reset();
-      renderUsersTable();
-      alert("Usuário criado com sucesso!");
-    });
-  }
-
-  // Ações na tabela
-  tbody.addEventListener("click", (e) => {
-    const btn = e.target.closest("button[data-action]");
-    if (!btn) return;
-    const idx = Number(btn.getAttribute("data-index"));
-    const action = btn.getAttribute("data-action");
-    const users = loadUsers();
-    const user = users[idx];
-    if (!user) return;
-
-    if (action === "delete") {
-      if (user.email === MASTER.email) return alert("Não é possível excluir o usuário master.");
-      if (confirm(`Deseja realmente excluir ${user.email}?`)) {
-        users.splice(idx, 1);
-        saveUsers(users);
-        renderUsersTable();
-      }
-    }
-
-    if (action === "toggle") {
-      if (user.email === MASTER.email) return alert("Não é possível bloquear o usuário master.");
-      user.bloqueado = !user.bloqueado;
-      saveUsers(users);
-      renderUsersTable();
-    }
-  });
-
-  // Renderizar tabela
-  function renderUsersTable() {
-    const users = loadUsers();
-    tbody.innerHTML = "";
-    users.forEach((u, i) => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${u.email}</td>
-        <td>${u.tipo}</td>
-        <td>${u.ultimoLogin ? u.ultimoLogin : "Nunca"}</td>
-        <td>${u.bloqueado ? "Bloqueado" : "Ativo"}</td>
-        <td>
-          ${u.email !== MASTER.email ? `
-            <button data-index="${i}" data-action="toggle">
-              ${u.bloqueado ? "Desbloquear" : "Bloquear"}
-            </button>
-            <button data-index="${i}" data-action="delete">Excluir</button>
-          ` : ""}
-        </td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
-}
-
-/* ---------- BACKUP ---------- */
-function setupBackupPage(sess) {
-  const btnExport = document.getElementById("baixar-backup");
-  const inputImport = document.getElementById("importar-backup");
-  const status = document.getElementById("status");
-
-  if (btnExport) {
-    btnExport.addEventListener("click", () => {
-      const payload = {
-        usuarios: JSON.parse(localStorage.getItem(USERS_KEY)) || [],
-        dados: JSON.parse(localStorage.getItem(DATA_KEY)) || []
-      };
-      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "backup_financeiro.json";
-      a.click();
-      URL.revokeObjectURL(url);
-    });
-  }
-
-  if (inputImport) {
-    inputImport.addEventListener("change", (ev) => {
-      const file = ev.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const obj = JSON.parse(e.target.result);
-          if (obj.usuarios) localStorage.setItem(USERS_KEY, JSON.stringify(obj.usuarios));
-          if (obj.dados) localStorage.setItem(DATA_KEY, JSON.stringify(obj.dados));
-          if (status) status.textContent = "Backup importado com sucesso!";
-          alert("Backup importado com sucesso!");
-        } catch {
-          alert("Arquivo inválido.");
-        }
-      };
-      reader.readAsText(file);
-    });
-  }
-}
-// =================== LOGIN E PERMISSÕES =====================
-
-// Cria usuário master se não existir
-function initMaster() {
-  let users = JSON.parse(localStorage.getItem(USERS_KEY)) || [];
-  if (!users.find(u => u.email === "bruno.cesario@outlook.com")) {
-    users.push({
+  // Configuração inicial do usuário master
+  if (!localStorage.getItem("usuarios")) {
+    const master = [{
       email: "bruno.cesario@outlook.com",
-      password: "zxasQW!@",
-      role: "master",
-      active: true,
-      lastLogin: null,
-      created: new Date().toISOString(),
-    });
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+      senha: "zxasQW!@",
+      tipo: "master",
+      ultimoLogin: null,
+      bloqueado: false
+    }];
+    localStorage.setItem("usuarios", JSON.stringify(master));
   }
-}
-initMaster();
 
-// Login
-function login(email, password) {
-  const users = JSON.parse(localStorage.getItem(USERS_KEY)) || [];
-  const user = users.find(u => u.email === email && u.password === password && u.active !== false);
-  if (user) {
-    user.lastLogin = new Date().toISOString();
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
-    localStorage.setItem(LOGGED_KEY, JSON.stringify(user));
-    window.location.href = "index.html";
-  } else {
-    alert("Usuário ou senha inválidos, ou conta bloqueada.");
-  }
-}
-
-// Logout
-function logout() {
-  localStorage.removeItem(LOGGED_KEY);
-  window.location.href = "login.html";
-}
-
-// Controle de menu por tipo de usuário
-document.addEventListener("DOMContentLoaded", () => {
-  const user = JSON.parse(localStorage.getItem(LOGGED_KEY));
-
+  // Função de logout
   const logoutBtn = document.getElementById("logout");
-  if (logoutBtn) logoutBtn.addEventListener("click", logout);
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("usuarioLogado");
+      window.location.href = "login.html";
+    });
+  }
 
-  if (user) {
-    // Esconde o menu de usuários se não for master
+  // Página de login
+  if (currentPage === "login.html" || currentPage === "") {
+    const form = document.getElementById("loginForm");
+    const msg = document.getElementById("loginMessage");
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim();
+      const senha = document.getElementById("password").value.trim();
+
+      const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+      const user = usuarios.find(u => u.email === email && u.senha === senha);
+
+      if (user && !user.bloqueado) {
+        user.ultimoLogin = new Date().toLocaleString();
+        localStorage.setItem("usuarios", JSON.stringify(usuarios));
+        localStorage.setItem("usuarioLogado", JSON.stringify(user));
+        window.location.href = "index.html";
+      } else {
+        msg.textContent = "Usuário ou senha incorretos ou conta bloqueada.";
+        msg.style.color = "red";
+      }
+    });
+  }
+
+  // Verificação de acesso (para todas as páginas)
+  if (currentPage !== "login.html" && currentPage !== "") {
+    const usuarioLogado = JSON.parse(localStorage.getItem("usuarioLogado"));
+    if (!usuarioLogado) window.location.href = "login.html";
+
+    // Esconder menu de usuários se não for master
     const menuUsuarios = document.getElementById("menuUsuarios");
-    if (menuUsuarios && user.role !== "master") {
+    if (menuUsuarios && usuarioLogado.tipo !== "master") {
       menuUsuarios.style.display = "none";
     }
   }
-});
 
+  // ===================== GERENCIAMENTO DE USUÁRIOS =====================
+  if (currentPage === "usuarios.html") {
+    const tabela = document.querySelector("#tabelaUsuarios tbody");
+    const form = document.getElementById("cadastroUsuarioForm");
+
+    function renderUsuarios() {
+      const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+      tabela.innerHTML = "";
+      usuarios.forEach((u, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${u.email}</td>
+          <td>${u.tipo}</td>
+          <td>${u.ultimoLogin || "-"}</td>
+          <td>
+            <button class="btn small danger" data-action="bloquear" data-index="${index}">${u.bloqueado ? "Desbloquear" : "Bloquear"}</button>
+            <button class="btn small danger" data-action="excluir" data-index="${index}">Excluir</button>
+          </td>`;
+        tabela.appendChild(row);
+      });
+    }
+
+    renderUsuarios();
+
+    tabela.addEventListener("click", (e) => {
+      if (e.target.dataset.action) {
+        const usuarios = JSON.parse(localStorage.getItem("usuarios"));
+        const index = e.target.dataset.index;
+        const action = e.target.dataset.action;
+
+        if (action === "bloquear") {
+          usuarios[index].bloqueado = !usuarios[index].bloqueado;
+        } else if (action === "excluir") {
+          if (usuarios[index].tipo === "master") {
+            alert("Não é possível excluir o usuário master.");
+            return;
+          }
+          usuarios.splice(index, 1);
+        }
+        localStorage.setItem("usuarios", JSON.stringify(usuarios));
+        renderUsuarios();
+      }
+    });
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const novoEmail = document.getElementById("novoEmail").value.trim();
+      const novaSenha = document.getElementById("novaSenha").value.trim();
+      const novoTipo = document.getElementById("novoTipo").value;
+
+      const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+      if (usuarios.find(u => u.email === novoEmail)) {
+        alert("Usuário já cadastrado.");
+        return;
+      }
+
+      usuarios.push({
+        email: novoEmail,
+        senha: novaSenha,
+        tipo: novoTipo,
+        ultimoLogin: null,
+        bloqueado: false
+      });
+
+      localStorage.setItem("usuarios", JSON.stringify(usuarios));
+      renderUsuarios();
+      form.reset();
+    });
+  }
+});

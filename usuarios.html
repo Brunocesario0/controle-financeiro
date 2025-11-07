@@ -8,71 +8,39 @@
 </head>
 <body>
   <header>
-    <h1>👤 Gerenciamento de Usuários</h1>
-    <div class="user-bar">
-      <button id="voltar" class="btn secondary">⬅️ Voltar</button>
-      <button id="logout" class="btn danger">Sair</button>
-    </div>
+    <h1>👥 Usuários</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Voltar</a></li>
+        <li><button id="logout" class="btn danger">Sair</button></li>
+      </ul>
+    </nav>
   </header>
 
   <main class="container">
     <section class="card">
-      <h2>Criar Novo Usuário</h2>
-      <form id="user-form">
-        <div class="row">
-          <label>E-mail
-            <input type="email" id="new-email" placeholder="usuario@exemplo.com" required>
-          </label>
-          <label>Senha
-            <input type="password" id="new-password" placeholder="Senha" required>
-          </label>
-        </div>
-        <label>Tipo de Usuário
-          <select id="new-role">
-            <option value="usuario">Usuário</option>
-            <option value="admin">Administrador</option>
-          </select>
-        </label>
-        <div class="actions">
-          <button type="submit" class="btn primary">Adicionar Usuário</button>
-        </div>
-      </form>
-    </section>
-
-    <section class="card">
       <h2>Usuários Cadastrados</h2>
-      <table id="user-table">
+      <table id="tabelaUsuarios">
         <thead>
-          <tr>
-            <th>E-mail</th>
-            <th>Tipo</th>
-            <th>Último Login</th>
-            <th>Status</th>
-            <th>Ações</th>
-          </tr>
+          <tr><th>Email</th><th>Tipo</th><th>Último Login</th><th>Ações</th></tr>
         </thead>
         <tbody></tbody>
       </table>
+
+      <h3>Cadastrar Novo Usuário</h3>
+      <form id="cadastroUsuarioForm">
+        <label>Email: <input type="email" id="novoEmail" required></label>
+        <label>Senha: <input type="password" id="novaSenha" required></label>
+        <label>Tipo:
+          <select id="novoTipo">
+            <option value="admin">Administrador</option>
+            <option value="usuario">Usuário</option>
+          </select>
+        </label>
+        <button type="submit" class="btn primary">Cadastrar</button>
+      </form>
     </section>
   </main>
-
-  <footer>
-    <p>Sistema de Controle Financeiro — Gerenciamento de Usuários</p>
-  </footer>
-
   <script src="script.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const user = JSON.parse(localStorage.getItem("cf_user"));
-      if (!user || user.role !== "master") {
-        alert("Acesso restrito ao usuário master!");
-        window.location.href = "index.html";
-      }
-
-      document.getElementById("voltar").addEventListener("click", () => {
-        window.location.href = "index.html";
-      });
-    });
-  </script>
 </body>
 </html>

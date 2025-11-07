@@ -3,39 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login — Controle Financeiro</title>
+  <title>Painel Principal</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <header>
+    <h1>💰 Controle Financeiro</h1>
+    <nav>
+      <ul id="menu">
+        <li><a href="insercao.html">Inserir Dados</a></li>
+        <li><a href="graficos.html">Gráficos</a></li>
+        <li><a href="backup.html">Backup</a></li>
+        <li id="menuUsuarios"><a href="usuarios.html">Usuários</a></li>
+        <li><button id="logout" class="btn danger">Sair</button></li>
+      </ul>
+    </nav>
+  </header>
+
   <main class="container">
-    <section class="card" style="max-width: 400px; margin: 100px auto;">
-      <h2>🔐 Acesso ao Sistema</h2>
-      <form id="login-form">
-        <label>E-mail
-          <input type="email" id="email" required placeholder="usuario@exemplo.com">
-        </label>
-        <label>Senha
-          <input type="password" id="password" required placeholder="********">
-        </label>
-        <div class="actions">
-          <button type="submit" class="btn primary">Entrar</button>
-        </div>
-      </form>
+    <section class="card">
+      <h2>Bem-vindo!</h2>
+      <p>Selecione uma opção no menu acima para continuar.</p>
     </section>
   </main>
 
-  <footer>
-    <p>Versão 3.0 — Login e Controle de Acesso</p>
-  </footer>
-
+  <footer><p>Versão 1.0</p></footer>
   <script src="script.js"></script>
-  <script>
-    document.getElementById("login-form").addEventListener("submit", (e) => {
-      e.preventDefault();
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-      login(email, password);
-    });
-  </script>
 </body>
 </html>
