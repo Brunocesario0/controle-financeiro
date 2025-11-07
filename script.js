@@ -129,3 +129,55 @@ function ordenarTabela(id,col){
   linhas.forEach(l=>tbody.appendChild(l));
   tabela.dataset.sortAsc=asc;
 }
+document.addEventListener("DOMContentLoaded", () => {
+  const loginForm = document.getElementById("login-form");
+  if (loginForm) {
+    loginForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      loginLocal();
+    });
+  } else {
+    checkLogin();
+  }
+});
+
+const usuarios = [
+  { email: "bruno@email.com", senha: "123", tipo: "admin" },
+  { email: "giovana@email.com", senha: "123", tipo: "usuario" }
+];
+
+function loginLocal() {
+  const email = document.getElementById("email").value.trim();
+  const senha = document.getElementById("senha").value.trim();
+
+  const user = usuarios.find(u => u.email === email && u.senha === senha);
+
+  if (!user) {
+    alert("Email ou senha incorretos!");
+    return;
+  }
+
+  localStorage.setItem("usuarioAtivo", JSON.stringify(user));
+  alert("Login realizado com sucesso!");
+  window.location.href = "main.html";
+}
+
+function checkLogin() {
+  const user = JSON.parse(localStorage.getItem("usuarioAtivo"));
+  if (!user) {
+    window.location.href = "index.html";
+    return;
+  }
+  document.getElementById("usuario-logado").textContent = user.email;
+
+  // Permissões
+  if (user.tipo !== "admin") {
+    const botoesExcluir = document.querySelectorAll(".btn-excluir");
+    botoesExcluir.forEach(btn => btn.style.display = "none");
+  }
+}
+
+function logout() {
+  localStorage.removeItem("usuarioAtivo");
+  window.location.href = "index.html";
+}
