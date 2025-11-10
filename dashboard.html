@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard - Controle Financeiro</title>
   <link rel="stylesheet" href="style.css">
@@ -15,58 +15,59 @@
   <div class="container">
     <aside class="menu">
       <ul>
-        <li data-section="receitas">Receitas</li>
-        <li data-section="despesas">Despesas</li>
+        <li class="active" data-section="home">Visão Geral</li>
+        <li data-section="entradas">Entradas</li>
+        <li data-section="saidas">Saídas</li>
         <li data-section="investimentos">Investimentos</li>
-        <li data-section="saques">Saques</li>
+        <li data-section="backup">Backup</li>
       </ul>
     </aside>
 
     <main class="content">
-      <section id="receitas" class="section active">
-        <h3>Receitas</h3>
-        <div class="form-group">
-          <input type="text" id="descReceita" placeholder="Descrição">
-          <input type="number" id="valorReceita" placeholder="Valor">
-          <button id="addReceita">Adicionar</button>
-        </div>
-        <ul id="listaReceitas"></ul>
+      <section id="home" class="section active">
+        <h3>Resumo Financeiro</h3>
+        <canvas id="financeChart"></canvas>
       </section>
 
-      <section id="despesas" class="section">
-        <h3>Despesas</h3>
+      <section id="entradas" class="section">
+        <h3>Entradas</h3>
         <div class="form-group">
-          <input type="text" id="descDespesa" placeholder="Descrição">
-          <input type="number" id="valorDespesa" placeholder="Valor">
-          <button id="addDespesa">Adicionar</button>
+          <input type="text" id="entradaDesc" placeholder="Descrição">
+          <input type="number" id="entradaValor" placeholder="Valor">
+          <button id="addEntrada">Adicionar</button>
         </div>
-        <ul id="listaDespesas"></ul>
+        <ul id="listaEntradas"></ul>
+      </section>
+
+      <section id="saidas" class="section">
+        <h3>Saídas</h3>
+        <div class="form-group">
+          <input type="text" id="saidaDesc" placeholder="Descrição">
+          <input type="number" id="saidaValor" placeholder="Valor">
+          <button id="addSaida">Adicionar</button>
+        </div>
+        <ul id="listaSaidas"></ul>
       </section>
 
       <section id="investimentos" class="section">
         <h3>Investimentos</h3>
         <div class="form-group">
-          <input type="text" id="descInvest" placeholder="Descrição">
-          <input type="number" id="valorInvest" placeholder="Valor">
-          <button id="addInvest">Adicionar</button>
+          <input type="text" id="invDesc" placeholder="Descrição">
+          <input type="number" id="invValor" placeholder="Valor">
+          <button id="addInvestimento">Adicionar</button>
         </div>
         <ul id="listaInvestimentos"></ul>
       </section>
 
-      <section id="saques" class="section">
-        <h3>Saques</h3>
-        <div class="form-group">
-          <input type="text" id="descSaque" placeholder="Descrição">
-          <input type="number" id="valorSaque" placeholder="Valor">
-          <button id="addSaque">Adicionar</button>
-        </div>
-        <ul id="listaSaques"></ul>
+      <section id="backup" class="section">
+        <h3>Backup</h3>
+        <button id="exportBackup">Exportar Backup</button>
+        <input type="file" id="importBackup" accept=".json" />
       </section>
     </main>
   </div>
 
-  <canvas id="financeChart"></canvas>
-
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script type="module" src="firebase.js"></script>
   <script type="module" src="auth.js"></script>
   <script src="chart.js"></script>
