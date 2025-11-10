@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel | Controle Financeiro</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h2>Painel Financeiro</h2>
+    <button id="logoutBtn">Sair</button>
+  </header>
+
+  <main>
+    <section id="inserir-dados">
+      <h3>Inserir Dados</h3>
+      <select id="tipo">
+        <option value="receita">Receita</option>
+        <option value="despesa">Despesa</option>
+        <option value="investimento">Investimento</option>
+        <option value="saque">Saque</option>
+      </select>
+      <input type="text" id="descricao" placeholder="Descrição">
+      <input type="number" id="valor" placeholder="Valor">
+      <button id="adicionarBtn">Adicionar</button>
+    </section>
+
+    <section id="filtros">
+      <h3>Filtrar Dados</h3>
+      <input type="text" id="filtroDescricao" placeholder="Descrição">
+      <select id="filtroTipo">
+        <option value="">Todos</option>
+        <option value="receita">Receita</option>
+        <option value="despesa">Despesa</option>
+        <option value="investimento">Investimento</option>
+        <option value="saque">Saque</option>
+      </select>
+      <input type="date" id="filtroData">
+      <button id="filtrarBtn">Filtrar</button>
+    </section>
+
+    <section id="dados">
+      <h3>Lista de Lançamentos</h3>
+      <table id="tabela-dados">
+        <thead>
+          <tr>
+            <th>Usuário</th>
+            <th>Tipo</th>
+            <th>Descrição</th>
+            <th>Valor</th>
+            <th>Data</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section id="graficos">
+      <h3>Gráficos</h3>
+      <canvas id="graficoFinanceiro"></canvas>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script type="module" src="script.js"></script>
+</body>
+</html>
