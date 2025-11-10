@@ -1,10 +1,9 @@
 // firebase.js
-// Mantenha esse arquivo como módulo (type="module" quando importar).
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
-// Sua configuração Firebase (já fornecida)
+// 🔧 Configuração do seu Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBDoz4Ui6iKJ2xQUDJcliSHNtye7D1cQ3s",
   authDomain: "controle-financeiro-fin.firebaseapp.com",
@@ -15,8 +14,9 @@ const firebaseConfig = {
   measurementId: "G-DTW26HLVJ3"
 };
 
+// 🔥 Inicializa Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-export { auth, db };
+export { app, auth, db };
