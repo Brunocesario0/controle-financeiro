@@ -1,197 +1,276 @@
-/* style.css — design moderno e funcional */
+/* ======== ESTILO GLOBAL ======== */
+* {
+  box-sizing: border-box;
+  font-family: "Inter", Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
 
 body {
-  margin: 0;
-  font-family: "Inter", Arial, sans-serif;
-  background-color: #f4f6f8;
+  background: #f5f7fa;
+  color: #222;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+h1, h2, h3 {
+  font-weight: 600;
   color: #333;
 }
 
-header.topbar {
-  background: #1e1e2f;
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
-}
-
-header.topbar h1 {
-  margin: 0;
-  font-size: 1.5rem;
-}
-
-header.topbar .accent {
-  color: #4caf50;
-}
-
-.topnav {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.topnav .nav-btn {
-  background: transparent;
+button {
+  cursor: pointer;
   border: none;
-  color: white;
+  border-radius: 8px;
+  padding: 10px 18px;
   font-weight: 500;
-  cursor: pointer;
-  padding: 0.5rem 1rem;
-  transition: 0.3s;
+  transition: background 0.3s;
 }
 
-.topnav .nav-btn:hover,
-.topnav .nav-btn.active {
-  background: #4caf50;
-  border-radius: 6px;
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
-.btn {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: 0.3s;
-  font-weight: 500;
-}
-
-.btn.primary {
-  background: #4caf50;
-  color: white;
-}
-
-.btn.danger {
-  background: #f44336;
-  color: white;
-}
-
-.btn.ghost {
-  background: transparent;
-  border: 1px solid #ccc;
-}
-
-.container {
-  padding: 2rem;
-}
-
-.card {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  margin-bottom: 1.5rem;
-  padding: 1.5rem;
-}
-
-h3 {
-  margin-top: 0;
-  color: #222;
-}
-
-.grid {
-  display: grid;
-  gap: 1rem;
-}
-
-.grid .card {
-  text-align: center;
-}
-
-.big {
-  font-size: 1.4rem;
-  color: #4caf50;
-}
-
-.hidden {
-  display: none !important;
-}
-
-footer.footer {
-  text-align: center;
-  padding: 1rem;
-  color: #999;
-  font-size: 0.85rem;
-}
-
-/* Tabelas */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-}
-
-table th, table td {
-  text-align: left;
-  padding: 0.5rem;
-  border-bottom: 1px solid #eee;
-}
-
-table th {
-  background: #f1f1f1;
-  cursor: pointer;
-}
-
-table tr:hover {
-  background: #fafafa;
-}
-
-/* Login page */
-body.page-login {
+/* ======== LOGIN ======== */
+.login-body {
   display: flex;
   justify-content: center;
   align-items: center;
+  background: linear-gradient(120deg, #2b5876, #4e4376);
   height: 100vh;
-  background: #1e1e2f;
-  color: white;
 }
 
-.login-card {
-  background: #2c2c3f;
-  padding: 2rem;
-  border-radius: 12px;
-  width: 100%;
-  max-width: 380px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.3);
-}
-
-.login-card h1 {
-  margin-top: 0;
-  color: #4caf50;
+.login-container {
+  background: #fff;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   text-align: center;
-}
-
-.login-card input {
   width: 100%;
-  margin-bottom: 1rem;
-  padding: 0.7rem;
-  border: none;
-  border-radius: 6px;
-  font-size: 1rem;
+  max-width: 400px;
 }
 
-.login-card button {
-  width: 100%;
-  background: #4caf50;
-  border: none;
-  padding: 0.8rem;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  color: white;
-  transition: 0.3s;
+.login-container h1 {
+  margin-bottom: 25px;
+  color: #2b5876;
 }
 
-.login-card button:hover {
-  background: #43a047;
-}
-
-.login-card a {
-  color: #ccc;
+.login-container input {
   display: block;
-  text-align: center;
-  margin-top: 1rem;
-  text-decoration: none;
+  width: 100%;
+  margin-bottom: 15px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  outline: none;
 }
 
-.login-card a:hover {
-  text-decoration: underline;
+.login-container input:focus {
+  border-color: #4e4376;
+}
+
+.login-container button {
+  width: 100%;
+  background: #2b5876;
+  color: #fff;
+  font-size: 16px;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+}
+
+.login-container button:hover {
+  background: #4e4376;
+}
+
+.error {
+  color: #e53935;
+  margin-top: 10px;
+}
+
+/* ======== NAVBAR ======== */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #2b5876;
+  color: #fff;
+  padding: 10px 25px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.navbar h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.navbar button {
+  background: #e53935;
+  color: #fff;
+  font-weight: bold;
+}
+
+.navbar button:hover {
+  background: #c62828;
+}
+
+/* ======== LAYOUT ======== */
+.container {
+  display: flex;
+  height: calc(100vh - 60px);
+}
+
+.menu {
+  background: #fff;
+  border-right: 1px solid #ddd;
+  width: 220px;
+  padding-top: 20px;
+}
+
+.menu ul {
+  list-style: none;
+}
+
+.menu li {
+  padding: 12px 20px;
+  cursor: pointer;
+  color: #333;
+  font-weight: 500;
+}
+
+.menu li:hover,
+.menu li.active {
+  background: #e8f0fe;
+  color: #2b5876;
+}
+
+/* ======== CONTEÚDO ======== */
+.content {
+  flex: 1;
+  padding: 25px;
+  overflow-y: auto;
+}
+
+.section {
+  display: none;
+}
+
+.section.active {
+  display: block;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ======== FORMULÁRIOS ======== */
+.form-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.form-group input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #bbb;
+}
+
+.form-group button {
+  background: #2b5876;
+  color: #fff;
+  padding: 10px 20px;
+}
+
+.form-group button:hover {
+  background: #4e4376;
+}
+
+/* ======== LISTAS ======== */
+ul {
+  list-style: none;
+  background: #fff;
+  border-radius: 10px;
+  padding: 10px 15px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+ul li {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+ul li:last-child {
+  border-bottom: none;
+}
+
+ul li.receita {
+  color: #2e7d32;
+}
+
+ul li.despesa {
+  color: #c62828;
+}
+
+ul li.investimento {
+  color: #1565c0;
+}
+
+ul li.saque {
+  color: #ef6c00;
+}
+
+/* ======== GRÁFICO ======== */
+#financeChart {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 25px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+/* ======== SCROLL ======== */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}
+
+/* ======== RESPONSIVO ======== */
+@media (max-width: 900px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .menu {
+    width: 100%;
+    display: flex;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .menu li {
+    flex: 1;
+    text-align: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .form-group {
+    flex-direction: column;
+  }
+
+  button {
+    width: 100%;
+  }
 }
