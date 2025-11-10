@@ -1,59 +1,69 @@
 body {
-  font-family: Arial, sans-serif;
-  background: #f7f8fa;
-  color: #333;
+  font-family: "Segoe UI", sans-serif;
   margin: 0;
-  padding: 0;
+  background: #f5f7fa;
+  color: #333;
 }
-
 header {
-  background: #4caf50;
-  color: white;
-  padding: 10px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: #0084ff;
+  color: white;
+  padding: 1rem 2rem;
 }
-
-.login-container {
+.container {
+  max-width: 900px;
+  margin: 2rem auto;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+  gap: 1.5rem;
 }
-
-.login-container input {
-  margin: 10px;
-  padding: 10px;
-  width: 250px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+.card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
-
-.login-container button {
-  background: #4caf50;
-  color: white;
+.btn {
+  padding: 0.6rem 1rem;
   border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
 }
-
-section {
-  background: white;
-  margin: 20px;
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+.btn.primary { background: #0084ff; color: white; }
+.btn.danger { background: #ff4747; color: white; }
+.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
 }
-
+.login-container {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 320px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.login-form label {
+  display: block;
+  margin-top: 1rem;
+}
+.login-form input {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
 table {
   width: 100%;
   border-collapse: collapse;
 }
-
-table th, table td {
-  padding: 8px;
+th, td {
+  padding: 0.5rem;
   border-bottom: 1px solid #ddd;
+}
+th {
+  background: #f0f0f0;
 }

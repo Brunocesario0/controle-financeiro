@@ -3,66 +3,76 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel | Controle Financeiro</title>
+  <title>Painel — Controle Financeiro</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body style="display:none;">
   <header>
-    <h2>Painel Financeiro</h2>
-    <button id="logoutBtn">Sair</button>
+    <h1>💰 Painel Financeiro</h1>
+    <button id="logout" class="btn danger">Sair</button>
   </header>
 
-  <main>
-    <section id="inserir-dados">
-      <h3>Inserir Dados</h3>
-      <select id="tipo">
-        <option value="receita">Receita</option>
-        <option value="despesa">Despesa</option>
-        <option value="investimento">Investimento</option>
-        <option value="saque">Saque</option>
-      </select>
-      <input type="text" id="descricao" placeholder="Descrição">
-      <input type="number" id="valor" placeholder="Valor">
-      <button id="adicionarBtn">Adicionar</button>
+  <main class="container">
+    <section class="card">
+      <h2>Adicionar Lançamento</h2>
+      <form id="form-lancamento">
+        <label>Quem
+          <select id="pessoa" required>
+            <option value="">--Escolha--</option>
+            <option value="Bruno">Bruno</option>
+            <option value="Giovana">Giovana</option>
+          </select>
+        </label>
+        <label>Tipo
+          <select id="tipo" required>
+            <option value="">--Tipo--</option>
+            <option value="Receita">Receita</option>
+            <option value="Despesa">Despesa</option>
+            <option value="Investimento">Investimento</option>
+            <option value="Saque">Saque</option>
+          </select>
+        </label>
+        <label>Descrição
+          <input type="text" id="descricao" required placeholder="Ex: Conta de luz">
+        </label>
+        <label>Valor (R$)
+          <input type="number" id="valor" step="0.01" required>
+        </label>
+        <label>Data (referência)
+          <input type="date" id="dataRef">
+        </label>
+        <button type="submit" class="btn primary">Salvar</button>
+      </form>
     </section>
 
-    <section id="filtros">
-      <h3>Filtrar Dados</h3>
-      <input type="text" id="filtroDescricao" placeholder="Descrição">
-      <select id="filtroTipo">
-        <option value="">Todos</option>
-        <option value="receita">Receita</option>
-        <option value="despesa">Despesa</option>
-        <option value="investimento">Investimento</option>
-        <option value="saque">Saque</option>
-      </select>
-      <input type="date" id="filtroData">
-      <button id="filtrarBtn">Filtrar</button>
-    </section>
-
-    <section id="dados">
-      <h3>Lista de Lançamentos</h3>
-      <table id="tabela-dados">
+    <section class="card">
+      <h2>Lançamentos</h2>
+      <table id="tabela-lancamentos">
         <thead>
           <tr>
-            <th>Usuário</th>
-            <th>Tipo</th>
+            <th>Quem</th>
             <th>Descrição</th>
             <th>Valor</th>
-            <th>Data</th>
+            <th>Tipo</th>
+            <th>Data (ref.)</th>
+            <th>Data Registro</th>
           </tr>
         </thead>
         <tbody></tbody>
       </table>
     </section>
 
-    <section id="graficos">
-      <h3>Gráficos</h3>
+    <section class="card">
+      <h2>📊 Gráficos</h2>
       <canvas id="graficoFinanceiro"></canvas>
     </section>
   </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <footer>
+    <p>Versão 3.0 — Controle Financeiro em Casal</p>
+  </footer>
+
   <script type="module" src="script.js"></script>
+  <script type="module" src="charts.js"></script>
 </body>
 </html>
