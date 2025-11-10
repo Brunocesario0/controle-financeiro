@@ -2,24 +2,20 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login — Controle Financeiro</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body class="login-page">
-  <div class="login-container">
-    <h1>💰 Controle Financeiro em Casal</h1>
-    <form id="login-form" class="login-form">
-      <label for="email">E-mail</label>
-      <input type="email" id="email" required placeholder="Seu e-mail">
-
-      <label for="password">Senha</label>
-      <input type="password" id="password" required placeholder="Sua senha">
-
-      <button type="submit" class="btn primary">Entrar</button>
+<body>
+  <main class="login-container">
+    <h1>💰 Controle Financeiro</h1>
+    <form id="login-form">
+      <input type="email" id="email" placeholder="E-mail" required />
+      <input type="password" id="senha" placeholder="Senha" required />
+      <button type="submit">Entrar</button>
     </form>
-    <p class="note">Acesse com seu e-mail e senha cadastrados no sistema.</p>
-  </div>
+    <p id="login-msg"></p>
+  </main>
 
   <script type="module" src="script.js"></script>
 </body>

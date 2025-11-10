@@ -1,52 +1,39 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel — Controle Financeiro</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Controle Financeiro</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body style="display:none;">
+<body>
   <header>
-    <h1>💰 Painel Financeiro</h1>
-    <button id="logout" class="btn danger">Sair</button>
+    <h1>💼 Painel Financeiro</h1>
+    <button id="logout">Sair</button>
   </header>
 
-  <main class="container">
-    <section class="card">
-      <h2>Adicionar Lançamento</h2>
-      <form id="form-lancamento">
-        <label>Quem
-          <select id="pessoa" required>
-            <option value="">--Escolha--</option>
-            <option value="Bruno">Bruno</option>
-            <option value="Giovana">Giovana</option>
-          </select>
-        </label>
-        <label>Tipo
-          <select id="tipo" required>
-            <option value="">--Tipo--</option>
-            <option value="Receita">Receita</option>
-            <option value="Despesa">Despesa</option>
-            <option value="Investimento">Investimento</option>
-            <option value="Saque">Saque</option>
-          </select>
-        </label>
-        <label>Descrição
-          <input type="text" id="descricao" required placeholder="Ex: Conta de luz">
-        </label>
-        <label>Valor (R$)
-          <input type="number" id="valor" step="0.01" required>
-        </label>
-        <label>Data (referência)
-          <input type="date" id="dataRef">
-        </label>
-        <button type="submit" class="btn primary">Salvar</button>
-      </form>
-    </section>
-
-    <section class="card">
+  <main>
+    <section>
       <h2>Lançamentos</h2>
+      <form id="form-lancamento">
+        <select id="pessoa" required>
+          <option value="">-- Quem --</option>
+          <option value="Bruno">Bruno</option>
+          <option value="Giovana">Giovana</option>
+        </select>
+        <select id="tipo" required>
+          <option value="">-- Tipo --</option>
+          <option value="Receita">Receita</option>
+          <option value="Despesa">Despesa</option>
+          <option value="Investimento">Investimento</option>
+          <option value="Saque">Saque</option>
+        </select>
+        <input type="text" id="descricao" placeholder="Descrição" required />
+        <input type="number" id="valor" step="0.01" placeholder="Valor" required />
+        <input type="date" id="dataRef" />
+        <button type="submit">Salvar</button>
+      </form>
+
       <table id="tabela-lancamentos">
         <thead>
           <tr>
@@ -55,24 +42,14 @@
             <th>Valor</th>
             <th>Tipo</th>
             <th>Data (ref.)</th>
-            <th>Data Registro</th>
+            <th>Registro</th>
           </tr>
         </thead>
         <tbody></tbody>
       </table>
     </section>
-
-    <section class="card">
-      <h2>📊 Gráficos</h2>
-      <canvas id="graficoFinanceiro"></canvas>
-    </section>
   </main>
 
-  <footer>
-    <p>Versão 3.0 — Controle Financeiro em Casal</p>
-  </footer>
-
   <script type="module" src="script.js"></script>
-  <script type="module" src="charts.js"></script>
 </body>
 </html>

@@ -1,10 +1,10 @@
-// === CONFIGURAÇÃO FIREBASE ===
+// ======== CONFIG FIREBASE ========
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import {
   getAuth,
   signInWithEmailAndPassword,
   onAuthStateChanged,
-  signOut
+  signOut,
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import {
   getFirestore,
@@ -30,109 +30,92 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// ===============================
-// ===  LOGIN PAGE  (index.html)
-// ===============================
-if (window.location.pathname.includes("index.html") || window.location.pathname === "/") {
+// =========================================
+// ========== TELA DE LOGIN ================
+// =========================================
+if (document.getElementById("login-form")) {
   const loginForm = document.getElementById("login-form");
+  const msg = document.getElementById("login-msg");
 
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
+    msg.textContent = "Entrando...";
 
-    const email = document.getElementById("email").value.trim();
-    const senha = document.getElementById("senha").value.trim();
+    const email = document.getElementById("email").value;
+    const senha = document.getElementById("senha").value;
 
     try {
       await signInWithEmailAndPassword(auth, email, senha);
-      console.log("Login realizado com sucesso!");
-      window.location.href = "dashboard.html";
+      msg.textContent = "Login bem-sucedido!";
+      setTimeout(() => (window.location.href = "dashboard.html"), 1000);
     } catch (error) {
-      console.error("Erro ao logar:", error.message);
-      alert("❌ Erro no login: " + error.message);
+      msg.textContent = "Erro: " + error.message;
     }
   });
 }
 
-// ===============================
-// ===  DASHBOARD PAGE
-// ===============================
-if (window.location.pathname.includes("dashboard.html")) {
-  document.body.innerHTML = `
-    <div style="display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;">
-      <h2>Verificando autenticação...</h2>
-    </div>
-  `;
+// =========================================
+// ========== DASHBOARD ====================
+// =========================================
+if (document.getElementById("form-lancamento")) {
+  const formLanc = document.getElementById("form-lancamento");
+  const tbody = document.querySelector("#tabela-lancamentos tbody");
+  const logoutBtn = document.getElementById("logout");
+
+  logoutBtn.addEventListener("click", async () => {
+    await signOut(auth);
+    window.location.href = "index.html";
+  });
 
   onAuthStateChanged(auth, (user) => {
-    if (user) {
-      // Carrega o conteúdo real do dashboard
-      fetch("dashboard.html")
-        .then((res) => res.text())
-        .then((html) => {
-          document.open();
-          document.write(html);
-          document.close();
-          initDashboard();
-        });
-    } else {
+    if (!user) {
       window.location.href = "index.html";
+    } else {
+      carregarLancamentos();
     }
   });
 
-  function initDashboard() {
-    const formLancamento = document.getElementById("form-lancamento");
-    const logoutBtn = document.getElementById("logout");
-    const tbody = document.querySelector("#tabela-lancamentos tbody");
+  formLanc.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const pessoa = document.getElementById("pessoa").value;
+    const tipo = document.getElementById("tipo").value;
+    const descricao = document.getElementById("descricao").value;
+    const valor = parseFloat(document.getElementById("valor").value);
+    const dataRef = document.getElementById("dataRef").value;
 
-    logoutBtn.addEventListener("click", async () => {
-      await signOut(auth);
-      window.location.href = "index.html";
-    });
-
-    formLancamento.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const pessoa = document.getElementById("pessoa").value;
-      const tipo = document.getElementById("tipo").value;
-      const descricao = document.getElementById("descricao").value;
-      const valor = parseFloat(document.getElementById("valor").value);
-      const dataRef = document.getElementById("dataRef").value;
-
-      try {
-        await addDoc(collection(db, "lancamentos"), {
-          pessoa,
-          tipo,
-          descricao,
-          valor,
-          dataRef,
-          dataRegistro: serverTimestamp(),
-        });
-        alert("✅ Lançamento salvo!");
-        formLancamento.reset();
-        carregarLancamentos();
-      } catch (error) {
-        alert("❌ Erro ao salvar: " + error.message);
-      }
-    });
-
-    async function carregarLancamentos() {
-      const q = query(collection(db, "lancamentos"), orderBy("dataRegistro", "desc"));
-      const querySnapshot = await getDocs(q);
-      tbody.innerHTML = "";
-      querySnapshot.forEach((doc) => {
-        const d = doc.data();
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${d.pessoa}</td>
-          <td>${d.descricao}</td>
-          <td>R$ ${d.valor.toFixed(2)}</td>
-          <td>${d.tipo}</td>
-          <td>${d.dataRef || "-"}</td>
-          <td>${d.dataRegistro?.toDate?.().toLocaleString?.() || "-"}</td>
-        `;
-        tbody.appendChild(row);
+    try {
+      await addDoc(collection(db, "lancamentos"), {
+        pessoa,
+        tipo,
+        descricao,
+        valor,
+        dataRef,
+        dataRegistro: serverTimestamp(),
       });
+      alert("✅ Lançamento salvo!");
+      formLanc.reset();
+      carregarLancamentos();
+    } catch (error) {
+      alert("❌ Erro: " + error.message);
     }
+  });
 
-    carregarLancamentos();
+  async function carregarLancamentos() {
+    const q = query(collection(db, "lancamentos"), orderBy("dataRegistro", "desc"));
+    const docs = await getDocs(q);
+    tbody.innerHTML = "";
+    docs.forEach((d) => {
+      const item = d.data();
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${item.pessoa}</td>
+        <td>${item.descricao}</td>
+        <td>R$ ${item.valor.toFixed(2)}</td>
+        <td>${item.tipo}</td>
+        <td>${item.dataRef || "-"}</td>
+        <td>${item.dataRegistro?.toDate?.().toLocaleString?.() || "-"}</td>
+      `;
+      tbody.appendChild(tr);
+    });
   }
 }
