@@ -1,18 +1,45 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login - Meu Dinheiro Organizado</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login — Controle Financeiro em Casal</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-  <div id="app">
-    <h2>Login</h2>
-    <input type="text" id="login-email" placeholder="Email" />
-    <input type="password" id="login-password" placeholder="Senha" />
-    <button onclick="login()">Entrar</button>
-  </div>
+<body class="page-login">
+  <main class="center-card">
+    <div class="brand">
+      <h1>Infra<span class="accent">Fin</span></h1>
+      <p class="tag">Controle financeiro em casal — receitas, despesas e investimentos</p>
+    </div>
+
+    <div class="card card-login">
+      <h2>Entrar</h2>
+      <form id="loginForm" autocomplete="on">
+        <label>Email
+          <input id="email" type="email" placeholder="seu@email.com" required />
+        </label>
+        <label>Senha
+          <input id="password" type="password" placeholder="Senha" required />
+        </label>
+        <div class="row">
+          <button type="submit" class="btn primary">Entrar</button>
+          <button id="demoBtn" type="button" class="btn ghost">Demo</button>
+        </div>
+        <p id="loginMsg" class="muted"></p>
+      </form>
+
+      <div class="help">
+        <p><strong>Contas pré-criadas:</strong></p>
+        <ul>
+          <li>b.cesario@outlook.com — <code>zxasQW!@</code> (master)</li>
+          <li>giovanaaparecidapenariol@gmail.com — <code>giovana123</code></li>
+        </ul>
+      </div>
+    </div>
+
+    <footer class="small muted">Pronto para publicar no GitHub Pages • Feito para Bruno</footer>
+  </main>
 
   <script src="script.js"></script>
 </body>
