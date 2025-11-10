@@ -1,22 +1,77 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login — Controle Financeiro</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login — InfraFin</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-  <main class="login-container">
-    <h1>💰 Controle Financeiro</h1>
-    <form id="login-form">
-      <input type="email" id="email" placeholder="E-mail" required />
-      <input type="password" id="senha" placeholder="Senha" required />
-      <button type="submit">Entrar</button>
-    </form>
-    <p id="login-msg"></p>
-  </main>
+<body class="page-login">
+  <div class="login-card">
+    <h1>Infra<span class="accent">Fin</span></h1>
+    <p class="muted">Controle financeiro em casal</p>
 
-  <script type="module" src="script.js"></script>
+    <form id="loginForm" class="login-form">
+      <label>
+        <input type="email" id="email" placeholder="E-mail" required />
+      </label>
+      <label>
+        <input type="password" id="password" placeholder="Senha" required />
+      </label>
+      <div class="row">
+        <button type="submit" class="btn primary">Entrar</button>
+        <button type="button" id="demoBtn" class="btn ghost">Demo</button>
+      </div>
+      <p id="loginMsg" class="muted"></p>
+    </form>
+
+    <div class="help muted small">
+      <p>Contas de teste (se já cadastradas no Firebase Auth):</p>
+      <ul>
+        <li><strong>Bruno</strong> — b.cesario@outlook.com</li>
+        <li><strong>Giovana</strong> — giovanaaparecidapenariol@gmail.com</li>
+      </ul>
+      <p>O master (Bruno) terá permissões extras dentro do app.</p>
+    </div>
+  </div>
+
+  <script type="module">
+  // index.html — apenas gerencia a submissão do login e redirecionamento
+  import { auth } from "./firebase.js";
+  import { signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+  const loginForm = document.getElementById("loginForm");
+  const loginMsg = document.getElementById("loginMsg");
+  const demoBtn = document.getElementById("demoBtn");
+
+  demoBtn.addEventListener("click", () => {
+    // preenche demo (apenas UX)
+    document.getElementById("email").value = "b.cesario@outlook.com";
+    document.getElementById("password").value = "123456";
+  });
+
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    loginMsg.textContent = "Aguarde...";
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      // signInWithEmail... resolves when successful; onAuthStateChanged in dashboard cuidará de confirmar antes de render
+      window.location.href = "dashboard.html";
+    } catch (err) {
+      console.error("Login error:", err);
+      loginMsg.textContent = "E-mail ou senha inválidos ou conta não cadastrada.";
+    }
+  });
+
+  // caso já esteja logado, vai direto ao dashboard
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      window.location.href = "dashboard.html";
+    }
+  });
+  </script>
 </body>
 </html>

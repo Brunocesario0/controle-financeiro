@@ -1,55 +1,209 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard — Controle Financeiro</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>InfraFin — Painel</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-  <header>
-    <h1>💼 Painel Financeiro</h1>
-    <button id="logout">Sair</button>
+<body class="page-app" style="display:none;">
+  <header class="topbar">
+    <div class="brand-left">
+      <h1>Infra<span class="accent">Fin</span></h1>
+      <small id="userEmail" class="muted"></small>
+    </div>
+    <nav class="topnav">
+      <button class="nav-btn active" data-view="dashboard">Painel</button>
+      <button class="nav-btn" data-view="inserir">Inserir</button>
+      <button class="nav-btn" data-view="investimentos">Investimentos</button>
+      <button class="nav-btn" data-view="graficos">Gráficos</button>
+      <button class="nav-btn" data-view="usuarios" id="navUsuarios">Usuários</button>
+      <button class="nav-btn" data-view="backup">Backup</button>
+      <button id="logoutBtn" class="btn small danger">Sair</button>
+    </nav>
   </header>
 
-  <main>
-    <section>
-      <h2>Lançamentos</h2>
-      <form id="form-lancamento">
-        <select id="pessoa" required>
-          <option value="">-- Quem --</option>
-          <option value="Bruno">Bruno</option>
-          <option value="Giovana">Giovana</option>
-        </select>
-        <select id="tipo" required>
-          <option value="">-- Tipo --</option>
-          <option value="Receita">Receita</option>
-          <option value="Despesa">Despesa</option>
-          <option value="Investimento">Investimento</option>
-          <option value="Saque">Saque</option>
-        </select>
-        <input type="text" id="descricao" placeholder="Descrição" required />
-        <input type="number" id="valor" step="0.01" placeholder="Valor" required />
-        <input type="date" id="dataRef" />
-        <button type="submit">Salvar</button>
-      </form>
+  <main class="container">
+    <!-- DASHBOARD -->
+    <section id="view-dashboard" class="view">
+      <div class="grid">
+        <div class="card">
+          <h3>Saldo — Bruno</h3>
+          <div id="saldoBruno" class="big">R$ 0,00</div>
+        </div>
+        <div class="card">
+          <h3>Saldo — Giovana</h3>
+          <div id="saldoGiovana" class="big">R$ 0,00</div>
+        </div>
+        <div class="card">
+          <h3>Saldo Casal</h3>
+          <div id="saldoTotal" class="big">R$ 0,00</div>
+        </div>
+      </div>
 
-      <table id="tabela-lancamentos">
-        <thead>
-          <tr>
-            <th>Quem</th>
-            <th>Descrição</th>
-            <th>Valor</th>
-            <th>Tipo</th>
-            <th>Data (ref.)</th>
-            <th>Registro</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+      <div class="card">
+        <h3>Últimos lançamentos</h3>
+        <div class="table-actions">
+          <label>Filtro Pessoa:
+            <select id="filtroPessoa">
+              <option value="all">Todos</option>
+              <option value="Bruno">Bruno</option>
+              <option value="Giovana">Giovana</option>
+            </select>
+          </label>
+          <label>Filtro Tipo:
+            <select id="filtroTipo">
+              <option value="all">Todos</option>
+              <option value="Receita">Receita</option>
+              <option value="Despesa">Despesa</option>
+            </select>
+          </label>
+          <label>Busca Descrição:
+            <input id="filtroDescricao" placeholder="texto..." />
+          </label>
+          <label>Data (ref.):
+            <input id="filtroData" type="date" />
+          </label>
+          <button id="exportAllBtn" class="btn">Exportar Tudo (CSV)</button>
+        </div>
+        <table id="recentTable">
+          <thead><tr><th data-col="pessoa">Quem</th><th data-col="descricao">Descrição</th><th data-col="valor">Valor</th><th data-col="tipo">Tipo</th><th data-col="data">Data</th><th data-col="dataRegistro">Registro</th><th>Ações</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- INSERIR -->
+    <section id="view-inserir" class="view hidden">
+      <div class="card">
+        <h3>Adicionar lançamento</h3>
+        <form id="formAdd">
+          <div class="row">
+            <label>Quem
+              <select id="campoPessoa" required>
+                <option value="Bruno">Bruno</option>
+                <option value="Giovana">Giovana</option>
+              </select>
+            </label>
+
+            <label>Tipo
+              <select id="campoTipo" required>
+                <option value="Receita">Receita</option>
+                <option value="Despesa">Despesa</option>
+                <option value="Investimento">Investimento</option>
+                <option value="Saque">Saque</option>
+              </select>
+            </label>
+          </div>
+
+          <label>Descrição
+            <input id="campoDescricao" type="text" placeholder="Ex: Salário, Conta luz, Aporte" required />
+          </label>
+
+          <div class="row">
+            <label>Valor (R$)
+              <input id="campoValor" type="number" step="0.01" min="0.01" required />
+            </label>
+            <label>Data (referência)
+              <input id="campoData" type="date" />
+            </label>
+          </div>
+
+          <div class="row">
+            <button type="submit" class="btn primary">Adicionar</button>
+            <button id="btnLimparTudo" type="button" class="btn ghost">Limpar tudo</button>
+            <button id="btnExportCSV" type="button" class="btn">Exportar Lançamentos (CSV)</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- INVESTIMENTOS -->
+    <section id="view-investimentos" class="view hidden">
+      <div class="card">
+        <h3>Investimentos e Saques</h3>
+        <div class="row">
+          <div>
+            <p>Total Investido: <strong id="totalInvestido">R$ 0,00</strong></p>
+            <p>Total Sacado: <strong id="totalSacado">R$ 0,00</strong></p>
+            <p>Saldo em Investimentos: <strong id="saldoInvest">R$ 0,00</strong></p>
+          </div>
+          <div>
+            <button id="exportInvCSV" class="btn">Exportar Investimentos (CSV)</button>
+          </div>
+        </div>
+
+        <div class="table-actions">
+          <label>Busca Descrição:
+            <input id="filtroInvDescricao" placeholder="texto..." />
+          </label>
+          <label>Data (ref.):
+            <input id="filtroInvData" type="date" />
+          </label>
+          <label>Filtro Pessoa:
+            <select id="filtroInvPessoa">
+              <option value="all">Todos</option>
+              <option value="Bruno">Bruno</option>
+              <option value="Giovana">Giovana</option>
+            </select>
+          </label>
+        </div>
+
+        <table id="tabelaInvestimentos">
+          <thead><tr><th data-col="pessoa">Quem</th><th data-col="descricao">Descrição</th><th data-col="valor">Valor</th><th data-col="tipo">Tipo</th><th data-col="data">Data</th><th data-col="dataRegistro">Registro</th><th>Ações</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- GRAFICOS -->
+    <section id="view-graficos" class="view hidden">
+      <div class="card">
+        <h3>Gráficos</h3>
+        <canvas id="graficoFinanceiro" style="max-width:600px"></canvas>
+      </div>
+    </section>
+
+    <!-- USUÁRIOS -->
+    <section id="view-usuarios" class="view hidden">
+      <div class="card">
+        <h3>Gerenciamento de Usuários (master)</h3>
+        <p>Somente o master (Bruno) vê esta tela.</p>
+
+        <form id="formNovoUsuario">
+          <h4>Criar usuário (apenas master)</h4>
+          <div class="row">
+            <input id="novoEmail" type="email" placeholder="E-mail" required />
+            <input id="novaSenha" type="password" placeholder="Senha" required />
+            <select id="novoRole"><option value="user">Usuário</option><option value="admin">Administrador</option></select>
+            <button type="submit" class="btn primary">Criar</button>
+          </div>
+        </form>
+
+        <table id="userTable">
+          <thead><tr><th>E-mail</th><th>Role</th><th>Último Login</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- BACKUP -->
+    <section id="view-backup" class="view hidden">
+      <div class="card">
+        <h3>Backup / Importar</h3>
+        <div class="row">
+          <button id="btnBackup" class="btn primary">Baixar backup (JSON)</button>
+          <input id="inputImport" type="file" accept=".json" />
+        </div>
+        <p id="backupStatus" class="muted"></p>
+      </div>
     </section>
   </main>
 
+  <footer class="footer muted">Feito para Bruno — pronto para GitHub Pages</footer>
+
+  <script type="module" src="firebase.js"></script>
+  <script type="module" src="chart.js"></script>
   <script type="module" src="script.js"></script>
 </body>
 </html>
